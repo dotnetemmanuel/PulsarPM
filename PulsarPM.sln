@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PulsarPM", "PulsarPM\Pulsar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PulsarPM.Client", "PulsarPM\PulsarPM.Client\PulsarPM.Client.csproj", "{61A5A3E7-E86B-43DC-9FA4-EB435D531E0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{541600E5-A724-48BA-B8A1-79F1663B2C3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{61A5A3E7-E86B-43DC-9FA4-EB435D531E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61A5A3E7-E86B-43DC-9FA4-EB435D531E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61A5A3E7-E86B-43DC-9FA4-EB435D531E0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{541600E5-A724-48BA-B8A1-79F1663B2C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{541600E5-A724-48BA-B8A1-79F1663B2C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{541600E5-A724-48BA-B8A1-79F1663B2C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{541600E5-A724-48BA-B8A1-79F1663B2C3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

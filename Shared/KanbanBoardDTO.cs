@@ -1,10 +1,9 @@
-﻿namespace PulsarPM.DAL;
+﻿namespace Shared;
 
 using System.ComponentModel.DataAnnotations;
 
-public class KanbanBoard
+public class KanbanBoardDTO
 {
-
   public int Id { get; set; }
 
   [Required]
@@ -12,6 +11,6 @@ public class KanbanBoard
 
   //Nav-properties
   public int ProjectId { get; set; }
-  public Project Project { get; set; }
-  public List<Card> Cards { get; set; } = new();
+  public ProjectDTO Project { get; set; }
+  public List<CardDTO> Cards { get; set; } = new();
 }

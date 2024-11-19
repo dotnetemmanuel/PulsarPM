@@ -4,7 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using PulsarPM.Client.Pages;
 using PulsarPM.Components;
 using PulsarPM.Components.Account;
+using PulsarPM.DAL;
 using PulsarPM.Data;
+using MudBlazor.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
   .AddInteractiveServerComponents()
   .AddInteractiveWebAssemblyComponents();
+builder.Services.AddMudServices();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -24,15 +28,17 @@ builder.Services.AddAuthentication(options => {
   })
   .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("TestDatabaseConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("TestDatabaseConnection") ?? throw new InvalidOperationException("Connection string 'TestDatabaseConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlite(connectionString));
+  options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
   .AddEntityFrameworkStores<ApplicationDbContext>()
   .AddSignInManager()
   .AddDefaultTokenProviders();
+
+builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -50,6 +56,8 @@ else
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
 }
+
+app.MapControllers();
 
 app.UseHttpsRedirection();
 

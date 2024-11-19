@@ -1,0 +1,73 @@
+﻿@page "/projects"
+@using PulsarPM.Client.Services
+@using Shared
+@inject ProjectService ProjectService
+
+<h3>Projects</h3>
+<MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="ToggleForm">New project
+</MudButton>
+<br>
+<br>
+@if (_isFormVisible)
+{
+
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudPaper Class="pa-4">
+                <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+                    <MudTextField T="string" Label="Name" Required="true" RequiredError="Project name is required!"/>
+
+                    <div class="d-flex align-center justify-space-between">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)"
+                                   Class="ml-auto">
+                            Register
+                        </MudButton>
+                    </div>
+                </MudForm>
+            </MudPaper>
+        </MudItem>
+        @* @if (errors.Length > 0) *@
+        @* { *@
+        @* <MudItem xs="12" sm="5"> *@
+        @*     <MudPaper Class="pa-4 mud-height-full"> *@
+        @*         <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText> *@
+        @*         @foreach (var error in errors) *@
+        @*         { *@
+        @*             <MudText Color="@Color.Error">@error</MudText> *@
+        @*         } *@
+        @*     </MudPaper> *@
+        @* </MudItem> *@
+        @* } *@
+    </MudGrid>
+
+    @foreach (var project in projects)
+    {
+        <p>@project.Name</p>
+    }
+}
+
+@code {
+    bool success;
+
+    string[] errors =
+    {
+        "dumbass"
+    };
+
+    MudForm form;
+    MudGrid mudgrid;
+
+    private bool _isFormVisible = false;
+
+    private void ToggleForm()
+    {
+        _isFormVisible = !_isFormVisible;
+    }
+
+    private ICollection<ProjectDTO> projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+           projects = await ProjectService.GetProjectsAsync();
+    }
+}
