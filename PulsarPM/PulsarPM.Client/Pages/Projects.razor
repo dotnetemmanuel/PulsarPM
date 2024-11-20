@@ -2,60 +2,75 @@
 @using PulsarPM.Client.Services
 @using Shared
 @inject ProjectService ProjectService
+@inject ILogger<Projects> Logger
 
 <h3>Projects</h3>
-<MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="ToggleForm">New project
-</MudButton>
-<br>
-<br>
-@if (_isFormVisible)
+@* <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="ToggleForm">New project *@
+@* </MudButton> *@
+@* <br> *@
+@* <br> *@
+@* @if (_isFormVisible) *@
+@* { *@
+@* *@
+@*     <MudGrid> *@
+@*         <MudItem xs="12" sm="7"> *@
+@*             <MudPaper Class="pa-4"> *@
+@*                 <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors"> *@
+@*                     <MudTextField T="string" Label="Name" Required="true" RequiredError="Project name is required!"/> *@
+@* *@
+@*                     <div class="d-flex align-center justify-space-between"> *@
+@*                         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" *@
+@*                                    Class="ml-auto"> *@
+@*                             Register *@
+@*                         </MudButton> *@
+@*                     </div> *@
+@*                 </MudForm> *@
+@*             </MudPaper> *@
+@*         </MudItem> *@
+@*         $1$ @if (errors.Length > 0) #1# *@
+@*         $1$ { #1# *@
+@*         $1$ <MudItem xs="12" sm="5"> #1# *@
+@*         $1$     <MudPaper Class="pa-4 mud-height-full"> #1# *@
+@*         $1$         <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText> #1# *@
+@*         $1$         @foreach (var error in errors) #1# *@
+@*         $1$         { #1# *@
+@*         $1$             <MudText Color="@Color.Error">@error</MudText> #1# *@
+@*         $1$         } #1# *@
+@*         $1$     </MudPaper> #1# *@
+@*         $1$ </MudItem> #1# *@
+@*         $1$ } #1# *@
+@*     </MudGrid> *@
+
+
+@* } *@
+
+
+@if (_isLoading)
 {
-
-    <MudGrid>
-        <MudItem xs="12" sm="7">
-            <MudPaper Class="pa-4">
-                <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-                    <MudTextField T="string" Label="Name" Required="true" RequiredError="Project name is required!"/>
-
-                    <div class="d-flex align-center justify-space-between">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)"
-                                   Class="ml-auto">
-                            Register
-                        </MudButton>
-                    </div>
-                </MudForm>
-            </MudPaper>
-        </MudItem>
-        @* @if (errors.Length > 0) *@
-        @* { *@
-        @* <MudItem xs="12" sm="5"> *@
-        @*     <MudPaper Class="pa-4 mud-height-full"> *@
-        @*         <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText> *@
-        @*         @foreach (var error in errors) *@
-        @*         { *@
-        @*             <MudText Color="@Color.Error">@error</MudText> *@
-        @*         } *@
-        @*     </MudPaper> *@
-        @* </MudItem> *@
-        @* } *@
-    </MudGrid>
-
-    @foreach (var project in projects)
+    <p>Loading...</p>
+}
+@* else if (_error != null) *@
+@* { *@
+@*     <p>Error: @_error</p> *@
+@* } *@
+else
+{
+    @foreach (var project in _projects)
     {
         <p>@project.Name</p>
     }
 }
 
 @code {
-    bool success;
-
-    string[] errors =
-    {
-        "dumbass"
-    };
-
-    MudForm form;
-    MudGrid mudgrid;
+    // bool success;
+    //
+    // string[] errors =
+    // {
+    //     "dumbass"
+    // };
+    //
+    // MudForm form;
+    // MudGrid mudgrid;
 
     private bool _isFormVisible = false;
 
@@ -64,10 +79,30 @@
         _isFormVisible = !_isFormVisible;
     }
 
-    private ICollection<ProjectDTO> projects;
+    private List<ProjectDTO> _projects = new();
+    private bool _isLoading = true;
+    private string? _error;
 
     protected override async Task OnInitializedAsync()
     {
-           projects = await ProjectService.GetProjectsAsync();
+        Logger.LogInformation("Initializing Projects component");
+        try
+        {
+            var startTime = DateTime.UtcNow;
+            Logger.LogInformation("Fetching projects from API");
+            _projects = await ProjectService.GetProjectsAsync();
+            var endTime = DateTime.UtcNow;
+            Logger.LogInformation($"Projects successfully loaded in {(endTime - startTime).TotalMilliseconds} ms");
+
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+            Logger.LogError(ex, "Error loading projects");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 }

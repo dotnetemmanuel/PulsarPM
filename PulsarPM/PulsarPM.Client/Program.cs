@@ -1,6 +1,9 @@
+using System;
+using System.Net.Http;
 using PulsarPM.Client;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using PulsarPM.Client.Services;
 
@@ -12,6 +15,10 @@ builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticat
 builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<ProjectService>();
-Console.WriteLine("ProjectService registered successfully");
+builder.Services.AddLogging();
+
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
 
 await builder.Build().RunAsync();
+
