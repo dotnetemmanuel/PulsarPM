@@ -1,97 +1,174 @@
-﻿@implements IDisposable
+﻿@using PulsarPM.Client.Pages
+@using Shared
+@using PulsarPM.Client.Services
+@using Microsoft.AspNetCore.Components
+@using MudBlazor
+@using PulsarPM.Client.Services
 
+
+@* @implements IDisposable *@
+
+@inject ProjectService ProjectService
 @inject NavigationManager NavigationManager
 
-<div class="top-row ps-3 navbar navbar-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="">PulsarPM</a>
-  </div>
-</div>
+@* <div class="top-row ps-3 navbar navbar-dark"> *@
+@*   <div class="container-fluid"> *@
+@*     <a class="navbar-brand" href="">PulsarPM</a> *@
+@*   </div> *@
+@* </div> *@
+@* *@
+@* <input type="checkbox" title="Navigation menu" class="navbar-toggler"/> *@
+@* *@
+@* <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()"> *@
+@*   <nav class="flex-column"> *@
+@*     <div class="nav-item px-3"> *@
+@*       <NavLink class="nav-link" href="" Match="NavLinkMatch.All"> *@
+@*         <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home *@
+@*       </NavLink> *@
+@*     </div> *@
+@* *@
+@*     <div class="nav-item px-3"> *@
+@*       <NavLink class="nav-link" href="counter"> *@
+@*         <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter *@
+@*       </NavLink> *@
+@*     </div> *@
+@* *@
+@*     <div class="nav-item px-3"> *@
+@*       <NavLink class="nav-link" href="weather"> *@
+@*         <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather *@
+@*       </NavLink> *@
+@*     </div> *@
+@* *@
+@*     <div class="nav-item px-3"> *@
+@*       <NavLink class="nav-link" href="projects"> *@
+@*         <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Projects *@
+@*       </NavLink> *@
+@*     </div> *@
+@* *@
+@*     <div class="nav-item px-3"> *@
+@*       <NavLink class="nav-link" href="auth"> *@
+@*         <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required *@
+@*       </NavLink> *@
+@*     </div> *@
+@* *@
+@*     <AuthorizeView> *@
+@*       <Authorized> *@
+@*         <div class="nav-item px-3"> *@
+@*           <NavLink class="nav-link" href="Account/Manage"> *@
+@*             <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name *@
+@*           </NavLink> *@
+@*         </div> *@
+@*         <div class="nav-item px-3"> *@
+@*           <form action="Account/Logout" method="post"> *@
+@*             <AntiforgeryToken/> *@
+@*             <input type="hidden" name="ReturnUrl" value="@currentUrl"/> *@
+@*             <button type="submit" class="nav-link"> *@
+@*               <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout *@
+@*             </button> *@
+@*           </form> *@
+@*         </div> *@
+@*       </Authorized> *@
+@*       <NotAuthorized> *@
+@*         <div class="nav-item px-3"> *@
+@*           <NavLink class="nav-link" href="Account/Register"> *@
+@*             <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register *@
+@*           </NavLink> *@
+@*         </div> *@
+@*         <div class="nav-item px-3"> *@
+@*           <NavLink class="nav-link" href="Account/Login"> *@
+@*             <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login *@
+@*           </NavLink> *@
+@*         </div> *@
+@*       </NotAuthorized> *@
+@*     </AuthorizeView> *@
+@*   </nav> *@
+@* </div> *@
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-  <nav class="flex-column">
-    <div class="nav-item px-3">
-      <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-      </NavLink>
-    </div>
+@*Mud Nav menu*@
+<MudPaper Width="250px" Class="py-3" Elevation="0">
+  <MudNavMenu>
+    
+    <MudNavGroup Title="Projects" Expanded="true">
+      @*wait for Api to load *@
+      @if (_isLoading)
+      {
+        <MudText Typo="Typo.subtitle1">Loading projects...</MudText>
+      }
+      else if (_projects.Any())
+      {
+        @foreach (var project in _projects)
+        {
+          <MudNavGroup Title="@project.Name">
+            <MudNavLink Href="/boards">Boards</MudNavLink>
+          </MudNavGroup>
+        }
+      }
+      else
+      {
+        <MudText Typo="Typo.subtitle1">No projects available.</MudText>
+      }
 
-    <div class="nav-item px-3">
-      <NavLink class="nav-link" href="counter">
-        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-      </NavLink>
-    </div>
+    </MudNavGroup>
+    
+    <MudNavLink Href="/servers">Servers</MudNavLink>
+    <MudNavLink Href="/billing" Disabled="true">Billing</MudNavLink>
+    <MudNavGroup Title="Settings" Expanded="true">
+      <MudNavLink Href="/users">Users</MudNavLink>
+      <MudNavLink Href="/security">Security</MudNavLink>
+    </MudNavGroup>
+    <MudNavLink Href="/about">About</MudNavLink>
+  </MudNavMenu>
+</MudPaper>
 
-    <div class="nav-item px-3">
-      <NavLink class="nav-link" href="weather">
-        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-      </NavLink>
-    </div>
 
-    <div class="nav-item px-3">
-      <NavLink class="nav-link" href="projects">
-        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Projects
-      </NavLink>
-    </div>
-
-    <div class="nav-item px-3">
-      <NavLink class="nav-link" href="auth">
-        <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-      </NavLink>
-    </div>
-
-    <AuthorizeView>
-      <Authorized>
-        <div class="nav-item px-3">
-          <NavLink class="nav-link" href="Account/Manage">
-            <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-          </NavLink>
-        </div>
-        <div class="nav-item px-3">
-          <form action="Account/Logout" method="post">
-            <AntiforgeryToken/>
-            <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
-            <button type="submit" class="nav-link">
-              <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-            </button>
-          </form>
-        </div>
-      </Authorized>
-      <NotAuthorized>
-        <div class="nav-item px-3">
-          <NavLink class="nav-link" href="Account/Register">
-            <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-          </NavLink>
-        </div>
-        <div class="nav-item px-3">
-          <NavLink class="nav-link" href="Account/Login">
-            <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-          </NavLink>
-        </div>
-      </NotAuthorized>
-    </AuthorizeView>
-  </nav>
-</div>
-
-@code {
-  private string? currentUrl;
-
-  protected override void OnInitialized()
+@code{
+  private bool _isLoading = true;
+  protected override async Task OnInitializedAsync()
   {
-    currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-    NavigationManager.LocationChanged += OnLocationChanged;
+    try
+    {
+      
+      _projects = await ProjectService.GetProjectsAsync();
+      // var startTime = DateTime.UtcNow;
+      // Logger.LogInformation("Fetching projects from API");
+      
+      // var endTime = DateTime.UtcNow;
+      // Logger.LogInformation($"Projects successfully loaded in {(endTime - startTime).TotalMilliseconds} ms");
+    }
+    catch (Exception ex)
+    {
+      // _error = ex.Message;
+      // Logger.LogError(ex, "Error loading projects");
+    }
+    finally
+    {
+      _isLoading = false;
+      StateHasChanged();
+    }
   }
+  private List<ProjectDTO> _projects = new();
+  
 
-  private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-  {
-    currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-    StateHasChanged();
-  }
-
-  public void Dispose()
-  {
-    NavigationManager.LocationChanged -= OnLocationChanged;
-  }
 }
+
+@* @code { *@
+@*   private string? currentUrl; *@
+@* *@
+@*   protected override void OnInitialized() *@
+@*   { *@
+@*     currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri); *@
+@*     NavigationManager.LocationChanged += OnLocationChanged; *@
+@*   } *@
+@* *@
+@*   private void OnLocationChanged(object? sender, LocationChangedEventArgs e) *@
+@*   { *@
+@*     currentUrl = NavigationManager.ToBaseRelativePath(e.Location); *@
+@*     StateHasChanged(); *@
+@*   } *@
+@* *@
+@*   public void Dispose() *@
+@*   { *@
+@*     NavigationManager.LocationChanged -= OnLocationChanged; *@
+@*   } *@
+@* } *@
