@@ -8,6 +8,6 @@ public class ProjectDTO
 
   [Required]
   public string Name { get; set; }
-  public KanbanBoardDTO KanbanBoard { get; set; }
-  public bool IsArchived { get; set; }
+  public KanbanBoardDTO? KanbanBoard { get; set; }
+  public bool IsArchived { get; set; } = false;
 }

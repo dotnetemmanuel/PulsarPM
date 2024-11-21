@@ -19,6 +19,5 @@ builder.Services.AddLogging();
 
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
-
 await builder.Build().RunAsync();
 

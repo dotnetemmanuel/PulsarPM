@@ -36,4 +36,25 @@ public class ProjectService
       throw;
     }
   }
+
+  public async Task CreateProjectAsync(ProjectDTO projectDto)
+  {
+    var response = await _httpClient.PostAsJsonAsync<ProjectDTO>("api/Project", projectDto);
+    if (!response.IsSuccessStatusCode)
+    {
+      throw new Exception($"Failed to create project: {response.ReasonPhrase}");
+    }
+  }
+
+  public async Task DeleteProjectAsync(ProjectDTO projectDto)
+  {
+    var response = await _httpClient.DeleteAsync($"api/Project/{projectDto.Id}" );
+    if (!response.IsSuccessStatusCode)
+    {
+      throw new Exception($"Failed to delete project: {response.ReasonPhrase}");
+    }
+
+  }
+
+
 }

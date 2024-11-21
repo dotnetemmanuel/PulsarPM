@@ -1,108 +1,129 @@
 ﻿@page "/projects"
+@using System.Data
 @using PulsarPM.Client.Services
 @using Shared
 @inject ProjectService ProjectService
 @inject ILogger<Projects> Logger
 
 <h3>Projects</h3>
-@* <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="ToggleForm">New project *@
-@* </MudButton> *@
-@* <br> *@
-@* <br> *@
-@* @if (_isFormVisible) *@
-@* { *@
-@* *@
-@*     <MudGrid> *@
-@*         <MudItem xs="12" sm="7"> *@
-@*             <MudPaper Class="pa-4"> *@
-@*                 <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors"> *@
-@*                     <MudTextField T="string" Label="Name" Required="true" RequiredError="Project name is required!"/> *@
-@* *@
-@*                     <div class="d-flex align-center justify-space-between"> *@
-@*                         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" *@
-@*                                    Class="ml-auto"> *@
-@*                             Register *@
-@*                         </MudButton> *@
-@*                     </div> *@
-@*                 </MudForm> *@
-@*             </MudPaper> *@
-@*         </MudItem> *@
-@*         $1$ @if (errors.Length > 0) #1# *@
-@*         $1$ { #1# *@
-@*         $1$ <MudItem xs="12" sm="5"> #1# *@
-@*         $1$     <MudPaper Class="pa-4 mud-height-full"> #1# *@
-@*         $1$         <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText> #1# *@
-@*         $1$         @foreach (var error in errors) #1# *@
-@*         $1$         { #1# *@
-@*         $1$             <MudText Color="@Color.Error">@error</MudText> #1# *@
-@*         $1$         } #1# *@
-@*         $1$     </MudPaper> #1# *@
-@*         $1$ </MudItem> #1# *@
-@*         $1$ } #1# *@
-@*     </MudGrid> *@
+<MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="ToggleForm">New project
+</MudButton>
+<br>
+<br>
+@if (_isFormVisible)
+{
 
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudPaper Class="pa-4">
+                <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                    <MudTextField @bind-Value="_projectName" T="string" Label="Name" Required="true"
+                                  RequiredError="Project name is required!"/>
 
-@* } *@
-
+                    <div class="d-flex align-center justify-space-between">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)"
+                                   Class="ml-auto" OnClick="CreateProjectAsync">
+                            Register
+                        </MudButton>
+                    </div>
+                </MudForm>
+            </MudPaper>
+        </MudItem>
+        @* @if (errors.Length > 0) *@
+        @* { *@
+        @* <MudItem xs="12" sm="5"> *@
+        @*     <MudPaper Class="pa-4 mud-height-full"> *@
+        @*         <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText> *@
+        @*         @foreach (var error in errors) *@
+        @*         { *@
+        @*             <MudText Color="@Color.Error">@error</MudText> *@
+        @*         } *@
+        @*     </MudPaper> *@
+        @* </MudItem> *@
+        @* } *@
+    </MudGrid>
+}
 
 @if (_isLoading)
 {
     <p>Loading...</p>
 }
-@* else if (_error != null) *@
-@* { *@
-@*     <p>Error: @_error</p> *@
-@* } *@
 else
 {
     @foreach (var project in _projects)
     {
-        <p>@project.Name</p>
+        <h6>@project.Name
+            <MudIconButton OnClick="@(() => DeleteProjectAsync(project))" Icon="@Icons.Material.Outlined.Delete" Color="Color.Error"/>
+        </h6>
     }
 }
 
 @code {
-    // bool success;
-    //
-    // string[] errors =
-    // {
-    //     "dumbass"
-    // };
-    //
-    // MudForm form;
-    // MudGrid mudgrid;
+    private bool _success;
+    private bool _isFormVisible;
+    private bool _isLoading = true;
+    private string _projectName = string.Empty;
+    private string? _error;
 
-    private bool _isFormVisible = false;
+    private List<ProjectDTO> _projects = new();
+    private string[] _errors;
+
+    private MudForm _form;
+    private MudGrid _mudgrid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Logger.LogInformation("Initializing Projects component");
+        try
+        {
+            // var startTime = DateTime.UtcNow;
+            // Logger.LogInformation("Fetching projects from API");
+            _projects = await ProjectService.GetProjectsAsync();
+            // var endTime = DateTime.UtcNow;
+            // Logger.LogInformation($"Projects successfully loaded in {(endTime - startTime).TotalMilliseconds} ms");
+        }
+        catch (Exception ex)
+        {
+            // _error = ex.Message;
+            // Logger.LogError(ex, "Error loading projects");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
 
     private void ToggleForm()
     {
         _isFormVisible = !_isFormVisible;
     }
 
-    private List<ProjectDTO> _projects = new();
-    private bool _isLoading = true;
-    private string? _error;
-
-    protected override async Task OnInitializedAsync()
+    private async Task CreateProjectAsync()
     {
-        Logger.LogInformation("Initializing Projects component");
+        var projectDto = new ProjectDTO
+        {
+            Name = _projectName
+        };
+        await ProjectService.CreateProjectAsync(projectDto);
+        _projectName = string.Empty;
+        _form?.ResetAsync();
+        _isFormVisible = false;
+        await OnInitializedAsync();
+        // StateHasChanged();
+    }
+
+    private async Task DeleteProjectAsync(ProjectDTO projectDto)
+    {
         try
         {
-            var startTime = DateTime.UtcNow;
-            Logger.LogInformation("Fetching projects from API");
-            _projects = await ProjectService.GetProjectsAsync();
-            var endTime = DateTime.UtcNow;
-            Logger.LogInformation($"Projects successfully loaded in {(endTime - startTime).TotalMilliseconds} ms");
-
+        await ProjectService.DeleteProjectAsync(projectDto);
+        await OnInitializedAsync();
         }
         catch (Exception ex)
         {
             _error = ex.Message;
-            Logger.LogError(ex, "Error loading projects");
         }
-        finally
-        {
-            _isLoading = false;
-        }
+
+
     }
 }
