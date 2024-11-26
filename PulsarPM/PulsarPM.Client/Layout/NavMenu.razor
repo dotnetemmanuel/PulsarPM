@@ -11,7 +11,6 @@
 @inject ProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject ProjectStateService ProjectStateService
-@rendermode InteractiveAuto
 
 @* <div class="top-row ps-3 navbar navbar-dark"> *@
 @*   <div class="container-fluid"> *@
@@ -96,7 +95,10 @@
       @*wait for Api to load *@
       @if (_isLoading)
       {
-        <MudText Typo="Typo.subtitle1">Loading projects...</MudText>
+        <MudText Typo="Typo.subtitle1">
+          <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true"/>
+          Loading...
+        </MudText>
       }
       else if (_projects.Any())
       {
@@ -123,14 +125,13 @@
 
 @code{
   private bool renderFlag;
-  private bool _isLoading;
+  private bool _isLoading = true;
   public List<ProjectDTO> _projects = new();
 
   protected override async Task OnInitializedAsync()
   {
     try
     {
-      _isLoading = true;
       ProjectStateService.OnProjectAdded += RefreshMenuAsync;
       Console.WriteLine("Navmenu subscribed to OnProjectAdded");
       _projects = await ProjectService.GetProjectsAsync();
