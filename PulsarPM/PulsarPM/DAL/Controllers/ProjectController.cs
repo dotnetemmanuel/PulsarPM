@@ -42,27 +42,53 @@ public class ProjectController : ControllerBase
   [HttpPost]
   public async Task<ActionResult<Project>> CreateProjectToDbAsync([FromBody] ProjectDTO projectDto)
   {
-    var project = new Project
+    try
     {
-      Name = projectDto.Name
-    };
+      var project = new Project
+      {
+        Name = projectDto.Name,
+      };
 
-    await _context.Projects.AddAsync(project);
-    await _context.SaveChangesAsync();
-    return Ok(project);
+      await _context.Projects.AddAsync(project);
+      await _context.SaveChangesAsync();
+
+      if (projectDto.KanbanBoard is null)
+      {
+        var kanbanBoard = new KanbanBoard
+        {
+          Name = "My new board",
+          ProjectId = project.Id
+        };
+        await _context.KanbanBoards.AddAsync(kanbanBoard);
+        await _context.SaveChangesAsync();
+      }
+
+      var createdProjectDto = new ProjectDTO
+      {
+        Id = project.Id,
+        Name = project.Name,
+        // Add other properties as needed
+      };
+      return Ok(createdProjectDto);
+    }
+    catch (Exception ex)
+    {
+      return StatusCode(500, $"Internal server error: {ex.Message}");
+    }
+
   }
 
   [HttpDelete("{id}")]
   public async Task<ActionResult<Project>> DeleteProjectFromDbAsync(int id)
   {
-   var projectToDelete = await _context.Projects.FindAsync(id);
-   if (projectToDelete is null)
-   {
-     return NotFound("Project not found");
-   }
+    var projectToDelete = await _context.Projects.FindAsync(id);
+    if (projectToDelete is null)
+    {
+      return NotFound("Project not found");
+    }
 
-   _context.Projects.Remove(projectToDelete);
-   await _context.SaveChangesAsync();
-   return Ok(projectToDelete);
+    _context.Projects.Remove(projectToDelete);
+    await _context.SaveChangesAsync();
+    return Ok(projectToDelete);
   }
 }

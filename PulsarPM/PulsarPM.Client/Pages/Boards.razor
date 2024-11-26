@@ -1,0 +1,89 @@
+﻿@page "/board/{ProjectId:int}"
+@using Shared
+@rendermode InteractiveAuto
+
+
+<h3>Boards</h3>
+
+@* <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="ToggleForm">New Board *@
+@* </MudButton> *@
+<br>
+<br>
+@* @if (_isFormVisible) *@
+@* { *@
+@* *@
+@*   <MudGrid> *@
+@*     <MudItem xs="12" sm="7"> *@
+@*       <MudPaper Class="pa-4"> *@
+@*         <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors"> *@
+@*           <MudTextField @bind-Value="_boardName" T="string" Label="Name" Required="true" *@
+@*                         RequiredError="Project name is required!"/> *@
+@* *@
+@*           <div class="d-flex align-center justify-space-between"> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)" *@
+@*                        Class="ml-auto" OnClick="CreateBoardAsync"> *@
+@*               Register *@
+@*             </MudButton> *@
+@*           </div> *@
+@*         </MudForm> *@
+@*       </MudPaper> *@
+@*     </MudItem> *@
+@*   </MudGrid> *@
+@* } *@
+
+@if (_isLoading)
+{
+  <p>Loading...</p>
+}
+
+
+@code {
+  [Parameter]
+  public int ProjectId {get; set;}
+
+  private bool _success;
+  private bool _isFormVisible;
+  private bool _isLoading = true;
+  private string _boardName = string.Empty;
+  private string? _error;
+
+
+
+  private List<KanbanBoardDTO> _boards = new();
+  private string[] _errors;
+
+  private MudForm _form;
+
+
+  private void ToggleForm()
+  {
+    _isFormVisible = !_isFormVisible;
+  }
+
+  // private async Task CreateBoardAsync()
+  // {
+  //   var boardDto = new KanbanBoardDTO()
+  //   {
+  //     Name = _boardName
+  //   };
+  //   await BoardService.CreateKanbanBoardAsync(boardDto);
+  //   _boardName = string.Empty;
+  //   _form?.ResetAsync();
+  //   _isFormVisible = false;
+  //   await OnInitializedAsync();
+  //   // StateHasChanged();
+  // }
+
+  // private async Task DeleteKanbanBoardAsync(KanbanBoardDTO boardDto)
+  // {
+  //   try
+  //   {
+  //     await KanbanBoardService.DeleteBoardAsync(boardDto);
+  //     await OnInitializedAsync();
+  //   }
+  //   catch (Exception ex)
+  //   {
+  //     _error = ex.Message;
+  //   }
+  // }
+}

@@ -88,7 +88,8 @@
 @*Mud Nav menu*@
 <MudPaper Width="250px" Class="py-3" Elevation="0">
   <MudNavMenu>
-    
+    <MudNavLink Href="/projects">All my projects</MudNavLink>
+
     <MudNavGroup Title="Projects" Expanded="true">
       @*wait for Api to load *@
       @if (_isLoading)
@@ -100,7 +101,7 @@
         @foreach (var project in _projects)
         {
           <MudNavGroup Title="@project.Name">
-            <MudNavLink Href="/boards">Boards</MudNavLink>
+            <MudNavLink Href="@($"/board/{project.Id}")">Board</MudNavLink>
           </MudNavGroup>
         }
       }
@@ -144,7 +145,6 @@
     }
   }
   private List<ProjectDTO> _projects = new();
-  
 
 }
 

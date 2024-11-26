@@ -1,5 +1,6 @@
 ﻿@page "/projects"
 @using System.Data
+@using PulsarPM.Client.Layout
 @using PulsarPM.Client.Services
 @using Shared
 @inject ProjectService ProjectService
@@ -54,7 +55,8 @@ else
     @foreach (var project in _projects)
     {
         <h6>@project.Name
-            <MudIconButton OnClick="@(() => DeleteProjectAsync(project))" Icon="@Icons.Material.Outlined.Delete" Color="Color.Error"/>
+            <MudIconButton OnClick="@(() => DeleteProjectAsync(project))" Icon="@Icons.Material.Outlined.Delete"
+                           Color="Color.Error"/>
         </h6>
     }
 }
@@ -103,22 +105,29 @@ else
     {
         var projectDto = new ProjectDTO
         {
-            Name = _projectName
+            Name = _projectName,
         };
-        await ProjectService.CreateProjectAsync(projectDto);
-        _projectName = string.Empty;
-        _form?.ResetAsync();
-        _isFormVisible = false;
-        await OnInitializedAsync();
-        // StateHasChanged();
+        try
+        {
+            await ProjectService.CreateProjectAsync(projectDto);
+            await OnInitializedAsync();
+            _projectName = string.Empty;
+            _form?.ResetAsync();
+            _isFormVisible = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
     }
 
     private async Task DeleteProjectAsync(ProjectDTO projectDto)
     {
         try
         {
-        await ProjectService.DeleteProjectAsync(projectDto);
-        await OnInitializedAsync();
+            await ProjectService.DeleteProjectAsync(projectDto);
+            await OnInitializedAsync();
         }
         catch (Exception ex)
         {

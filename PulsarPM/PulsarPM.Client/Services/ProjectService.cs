@@ -24,7 +24,8 @@ public class ProjectService
     try
     {
       _logger.LogInformation("Fetching projects from API");
-      var projects = await _httpClient.GetFromJsonAsync<List<ProjectDTO>>("api/Project");
+      // var projects = await _httpClient.GetFromJsonAsync<List<ProjectDTO>>("api/Project");
+      var projects = await _httpClient.GetFromJsonAsync<List<ProjectDTO>>("Project");
       if (projects == null) throw new InvalidOperationException("No projects received from API");
 
       _logger.LogInformation("Successfully fetched projects from API");
@@ -37,18 +38,22 @@ public class ProjectService
     }
   }
 
-  public async Task CreateProjectAsync(ProjectDTO projectDto)
+  public async Task<ProjectDTO> CreateProjectAsync(ProjectDTO projectDto)
   {
-    var response = await _httpClient.PostAsJsonAsync<ProjectDTO>("api/Project", projectDto);
+    // var response = await _httpClient.PostAsJsonAsync("api/Project", projectDto);
+    var response = await _httpClient.PostAsJsonAsync("Project", projectDto);
     if (!response.IsSuccessStatusCode)
     {
       throw new Exception($"Failed to create project: {response.ReasonPhrase}");
     }
+    return await response.Content.ReadFromJsonAsync<ProjectDTO>();
+
   }
 
   public async Task DeleteProjectAsync(ProjectDTO projectDto)
   {
-    var response = await _httpClient.DeleteAsync($"api/Project/{projectDto.Id}" );
+    // var response = await _httpClient.DeleteAsync($"api/Project/{projectDto.Id}" );
+    var response = await _httpClient.DeleteAsync($"Project/{projectDto.Id}" );
     if (!response.IsSuccessStatusCode)
     {
       throw new Exception($"Failed to delete project: {response.ReasonPhrase}");
