@@ -10,6 +10,8 @@
 
 @inject ProjectService ProjectService
 @inject NavigationManager NavigationManager
+@inject ProjectStateService ProjectStateService
+@rendermode InteractiveAuto
 
 @* <div class="top-row ps-3 navbar navbar-dark"> *@
 @*   <div class="container-fluid"> *@
@@ -111,7 +113,7 @@
       }
 
     </MudNavGroup>
-    
+
     <MudNavLink Href="/Account/Login">Sign In</MudNavLink>
 
     <MudNavLink Href="/about">About</MudNavLink>
@@ -120,16 +122,21 @@
 
 
 @code{
-  private bool _isLoading = true;
+  private bool renderFlag;
+  private bool _isLoading;
+  public List<ProjectDTO> _projects = new();
+
   protected override async Task OnInitializedAsync()
   {
     try
     {
-      
+      _isLoading = true;
+      ProjectStateService.OnProjectAdded += RefreshMenuAsync;
+      Console.WriteLine("Navmenu subscribed to OnProjectAdded");
       _projects = await ProjectService.GetProjectsAsync();
       // var startTime = DateTime.UtcNow;
       // Logger.LogInformation("Fetching projects from API");
-      
+
       // var endTime = DateTime.UtcNow;
       // Logger.LogInformation($"Projects successfully loaded in {(endTime - startTime).TotalMilliseconds} ms");
     }
@@ -144,7 +151,18 @@
       StateHasChanged();
     }
   }
-  private List<ProjectDTO> _projects = new();
+
+  private async Task RefreshMenuAsync()
+  {
+    Console.WriteLine("NavMenu is refreshing");
+    await OnInitializedAsync();
+    StateHasChanged();
+  }
+
+  public void Dispose()
+  {
+    ProjectStateService.OnProjectAdded -= RefreshMenuAsync;
+  }
 
 }
 

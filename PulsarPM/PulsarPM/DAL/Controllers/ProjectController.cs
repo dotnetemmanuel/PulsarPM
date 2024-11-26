@@ -7,9 +7,11 @@ using Shared;
 namespace PulsarPM.DAL.Controllers;
 
 using Client.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [ApiController]
-[Route("api/[controller]")]
+[Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
 public class ProjectController : ControllerBase
 {
   private readonly ApplicationDbContext _context;

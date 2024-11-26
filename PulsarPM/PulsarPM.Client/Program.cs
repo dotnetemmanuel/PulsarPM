@@ -17,6 +17,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(new Uri(
 
 // builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<ProjectService>();
+builder.Services.AddSingleton<ProjectStateService>();
 builder.Services.AddLogging();
 
 builder.Logging.SetMinimumLevel(LogLevel.Debug);

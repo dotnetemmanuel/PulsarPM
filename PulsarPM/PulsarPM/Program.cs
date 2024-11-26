@@ -43,6 +43,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddScoped<ProjectService>();
+builder.Services.AddSingleton<ProjectStateService>();
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
