@@ -105,7 +105,7 @@
         @foreach (var project in _projects)
         {
           <MudNavGroup Title="@project.Name">
-            <MudNavLink Href="@($"/board/{project.Id}")">Board</MudNavLink>
+            <MudNavLink Href="@($"/board/{project.Id}")">BOARD</MudNavLink>
           </MudNavGroup>
         }
       }
@@ -135,16 +135,11 @@
       ProjectStateService.OnProjectAdded += RefreshMenuAsync;
       Console.WriteLine("Navmenu subscribed to OnProjectAdded");
       _projects = await ProjectService.GetProjectsAsync();
-      // var startTime = DateTime.UtcNow;
-      // Logger.LogInformation("Fetching projects from API");
 
-      // var endTime = DateTime.UtcNow;
-      // Logger.LogInformation($"Projects successfully loaded in {(endTime - startTime).TotalMilliseconds} ms");
     }
     catch (Exception ex)
     {
-      // _error = ex.Message;
-      // Logger.LogError(ex, "Error loading projects");
+
     }
     finally
     {
@@ -166,24 +161,3 @@
   }
 
 }
-
-@* @code { *@
-@*   private string? currentUrl; *@
-@* *@
-@*   protected override void OnInitialized() *@
-@*   { *@
-@*     currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri); *@
-@*     NavigationManager.LocationChanged += OnLocationChanged; *@
-@*   } *@
-@* *@
-@*   private void OnLocationChanged(object? sender, LocationChangedEventArgs e) *@
-@*   { *@
-@*     currentUrl = NavigationManager.ToBaseRelativePath(e.Location); *@
-@*     StateHasChanged(); *@
-@*   } *@
-@* *@
-@*   public void Dispose() *@
-@*   { *@
-@*     NavigationManager.LocationChanged -= OnLocationChanged; *@
-@*   } *@
-@* } *@

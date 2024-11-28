@@ -6,6 +6,7 @@
 @using Shared
 @inject ProjectService ProjectService
 @inject ProjectStateService ProjectStateService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveAuto
 
 <h3>Projects</h3>
@@ -44,6 +45,10 @@ else
     @foreach (var project in _projects)
     {
         <h6>@project.Name
+            <MudIconButton OnClick="@(() => NavigationManager.NavigateTo($"/board/{project.Id}"))"
+                           Icon="@Icons.Material.Outlined.OpenInNew"
+                           Color="Color.Primary"/>
+                                        
             <MudIconButton OnClick="@(() => DeleteProjectAsync(project))" Icon="@Icons.Material.Outlined.Delete"
                            Color="Color.Error"/>
         </h6>
@@ -100,6 +105,9 @@ else
         {
             Name = _projectName,
         };
+        
+        // Log the KanbanBoard name to the console
+        Console.WriteLine($"KanbanBoard Name: {projectDto?.Name}");
         try
         {
             await ProjectService.CreateProjectAsync(projectDto);

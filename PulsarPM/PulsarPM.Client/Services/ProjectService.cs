@@ -38,6 +38,12 @@ public class ProjectService
     }
   }
 
+  public async Task<ProjectDTO> GetProjectByIdAsync(int projectId)
+  {
+    var response = await _httpClient.GetFromJsonAsync<ProjectDTO>($"Project/{projectId}");
+    return response;
+  }
+
   public async Task<ProjectDTO> CreateProjectAsync(ProjectDTO projectDto)
   {
     // var response = await _httpClient.PostAsJsonAsync("api/Project", projectDto);

@@ -13,6 +13,6 @@ public class Card
   public string? Color { get; set; }
 
   //Nav-properties
-  public int KanbanBoardId { get; set; }
-  public KanbanBoard KanbanBoard { get; set; }
+  public int ProjectId { get; set; }
+  public Project Project { get; set; }
 }

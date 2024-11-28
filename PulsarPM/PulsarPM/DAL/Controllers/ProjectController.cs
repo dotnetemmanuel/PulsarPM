@@ -53,23 +53,13 @@ public class ProjectController : ControllerBase
 
       await _context.Projects.AddAsync(project);
       await _context.SaveChangesAsync();
-
-      if (projectDto.KanbanBoard is null)
-      {
-        var kanbanBoard = new KanbanBoard
-        {
-          Name = "My new board",
-          ProjectId = project.Id
-        };
-        await _context.KanbanBoards.AddAsync(kanbanBoard);
-        await _context.SaveChangesAsync();
-      }
+      
 
       var createdProjectDto = new ProjectDTO
       {
         Id = project.Id,
         Name = project.Name,
-        // Add other properties as needed
+       
       };
       return Ok(createdProjectDto);
     }

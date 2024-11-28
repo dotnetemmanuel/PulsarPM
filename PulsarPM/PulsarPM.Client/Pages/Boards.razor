@@ -1,89 +1,95 @@
 ﻿@page "/board/{ProjectId:int}"
+@using PulsarPM.Client.Services
 @using Shared
+
+@inject ProjectService ProjectService
+
 @rendermode InteractiveAuto
 
+<h3>@_projectDto.Name</h3>
 
-<h3>Boards</h3>
+<MudDropContainer T="CardDTO" Items="_cards" ItemsSelector="@((item, dropzone) => item.Status == dropzone)" ItemDropped="ItemUpdated" Class="w-100 h-100">
+  <ChildContent>
+    <MudDropContainer T="DropZone" Items="_zones" ItemsSelector="@((item, dropzone) => true)" Class="d-flex w-100">
+      <ChildContent>
+        @foreach (var zone in _zones)
+        {
+          <MudDropZone T="DropZone" AllowReorder Class="flex-1 mud-background-gray px-4 py-1 mx-2 rounded">
+            <MudText Typo="Typo.h6">@zone.Name</MudText>
+            <MudDropZone T="CardDTO" Identifier="@zone.Name" AllowReorder Class="d-flex flex-column gap-3 mud-background-light px-4 py-1 mt-2 rounded" />
+          </MudDropZone>
+        }
+      </ChildContent>
+    </MudDropContainer>
+  </ChildContent>
 
-@* <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary" OnClick="ToggleForm">New Board *@
-@* </MudButton> *@
+  <ItemRenderer>
+    @* Card rendering inside drop zones *@
+    <MudPaper Class="pa-4 my-4">
+      <MudText>@context.Name</MudText>
+    </MudPaper>
+  </ItemRenderer>
+
+</MudDropContainer>
+
 <br>
 <br>
-@* @if (_isFormVisible) *@
-@* { *@
-@* *@
-@*   <MudGrid> *@
-@*     <MudItem xs="12" sm="7"> *@
-@*       <MudPaper Class="pa-4"> *@
-@*         <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors"> *@
-@*           <MudTextField @bind-Value="_boardName" T="string" Label="Name" Required="true" *@
-@*                         RequiredError="Project name is required!"/> *@
-@* *@
-@*           <div class="d-flex align-center justify-space-between"> *@
-@*             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)" *@
-@*                        Class="ml-auto" OnClick="CreateBoardAsync"> *@
-@*               Register *@
-@*             </MudButton> *@
-@*           </div> *@
-@*         </MudForm> *@
-@*       </MudPaper> *@
-@*     </MudItem> *@
-@*   </MudGrid> *@
-@* } *@
-
-@if (_isLoading)
-{
-  <p>Loading...</p>
-}
-
 
 @code {
   [Parameter]
-  public int ProjectId {get; set;}
+  public int ProjectId { get; set; }
 
   private bool _success;
   private bool _isFormVisible;
   private bool _isLoading = true;
   private string _boardName = string.Empty;
   private string? _error;
+  private ProjectDTO _projectDto;
 
-
-
-  private List<KanbanBoardDTO> _boards = new();
   private string[] _errors;
-
   private MudForm _form;
 
+  protected override async Task OnInitializedAsync()
+  {
+    await GetProjectById();
+    _isLoading = false;
+  }
+
+  // DRAG AND DROP
+  private void ItemUpdated(MudItemDropInfo<CardDTO> card)
+  {
+    card.Item.Status = card.DropzoneIdentifier;
+  }
+
+  private List<DropZone> _zones = new()
+  {
+    new() { Name = "Done" },
+    new() { Name = "Testing" },
+    new() { Name = "In Progress" },
+    new() { Name = "Backlog" }
+  };
+
+  private List<CardDTO> _cards = new()
+  {
+    new CardDTO() { Name = "Drag me!", Status = "Done" },
+    new CardDTO() { Name = "Or me!", Status = "Testing" },
+    new CardDTO() { Name = "Just Mud", Status = "In Progress" },
+    new CardDTO() { Name = "Just bud", Status = "Backlog" },
+  };
 
   private void ToggleForm()
   {
     _isFormVisible = !_isFormVisible;
   }
 
-  // private async Task CreateBoardAsync()
-  // {
-  //   var boardDto = new KanbanBoardDTO()
-  //   {
-  //     Name = _boardName
-  //   };
-  //   await BoardService.CreateKanbanBoardAsync(boardDto);
-  //   _boardName = string.Empty;
-  //   _form?.ResetAsync();
-  //   _isFormVisible = false;
-  //   await OnInitializedAsync();
-  //   // StateHasChanged();
-  // }
+  private async Task GetProjectById()
+  {
+    _projectDto = await ProjectService.GetProjectByIdAsync(ProjectId);
+  }
 
-  // private async Task DeleteKanbanBoardAsync(KanbanBoardDTO boardDto)
-  // {
-  //   try
-  //   {
-  //     await KanbanBoardService.DeleteBoardAsync(boardDto);
-  //     await OnInitializedAsync();
-  //   }
-  //   catch (Exception ex)
-  //   {
-  //     _error = ex.Message;
-  //   }
-  // }
+  // Temporary class
+  private class DropZone
+  {
+    public string Name { get; init; }
+  }
 }
