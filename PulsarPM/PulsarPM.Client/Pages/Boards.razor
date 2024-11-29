@@ -3,56 +3,131 @@
 @using Shared
 
 @inject ProjectService ProjectService
+@inject CardService CardService
 
 @rendermode InteractiveAuto
 
-<h3>@_projectDto.Name</h3>
+@if (_isLoading)
+{
+  <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+}
+else
+{
+  <h3>@_projectDto.Name</h3>
 
-<MudDropContainer T="CardDTO" Items="_cards" ItemsSelector="@((item, dropzone) => item.Status == dropzone)" ItemDropped="ItemUpdated" Class="w-100 h-100">
-  <ChildContent>
-    <MudDropContainer T="DropZone" Items="_zones" ItemsSelector="@((item, dropzone) => true)" Class="d-flex w-100">
-      <ChildContent>
-        @foreach (var zone in _zones)
-        {
-          <MudDropZone T="DropZone" AllowReorder Class="flex-1 mud-background-gray px-4 py-1 mx-2 rounded">
-            <MudText Typo="Typo.h6">@zone.Name</MudText>
-            <MudDropZone T="CardDTO" Identifier="@zone.Name" AllowReorder Class="d-flex flex-column gap-3 mud-background-light px-4 py-1 mt-2 rounded" />
-          </MudDropZone>
-        }
-      </ChildContent>
-    </MudDropContainer>
-  </ChildContent>
+  <MudDropContainer T="CardDTO" Items="_cards" ItemsSelector="@((item, dropzone) => item.Status == dropzone)"
+                    ItemDropped="ItemUpdated" Class="w-100 h-100">
+    <ChildContent>
+      <MudDropContainer T="DropZone" Items="_zones" ItemsSelector="@((item, dropzone) => true)" Class="d-flex w-100">
+        <ChildContent>
+          @foreach (var zone in _zones)
+          {
+            <MudDropZone T="DropZone" AllowReorder Class="flex-1 mud-background-gray pa-4 py-1 mx-2 rounded">
+              <MudText Typo="Typo.h6">@zone.Name</MudText>
+              <MudDropZone T="CardDTO" Identifier="@zone.Name" AllowReorder
+                           Class="d-flex flex-column gap-3 mud-background-light px-4 py-1 mt-2 rounded"/>
+              @if (zone.Name == "Backlog")
+              {
+                <MudIconButton OnClick="ToggleForm" Icon="@Icons.Material.Outlined.Add" Color="Color.Primary">Add task
+                </MudIconButton>
+                @if (_isFormVisible)
+                {
+                  <br/>
+                  <MudGrid>
+                    <MudItem xs="12" sm="7">
+                      <MudPaper Class="pa-4">
+                        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                          <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
+                                        RequiredError="Project name is required!"/>
+                          <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
+                          @* <MudTextField @bind-Value="_cardStatus" T="string" Label="Status"/> *@
+                          @* <MudTextField @bind-Value="_cardColor" T="string" Label="Color"/> *@
+                          @* <MudTextField @bind-Value="_projectId" T="int" Label="Project Id"/> *@
+                          <div class="d-flex align-center justify-space-between">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)"
+                                       Class="ml-auto" OnClick="CreateCardAsync">
+                              Register
+                            </MudButton>
+                          </div>
+                        </MudForm>
+                      </MudPaper>
+                    </MudItem>
+                  </MudGrid>
 
-  <ItemRenderer>
-    @* Card rendering inside drop zones *@
-    <MudPaper Class="pa-4 my-4">
-      <MudText>@context.Name</MudText>
-    </MudPaper>
-  </ItemRenderer>
+                }
+              }
+            </MudDropZone>
+          }
+        </ChildContent>
+      </MudDropContainer>
+    </ChildContent>
 
-</MudDropContainer>
+    <ItemRenderer>
+      @* Card rendering inside drop zones *@
+      <MudPaper Class="pa-4 my-1">
+        <MudText>@context.Name</MudText>
+        <MudText>@context.Description</MudText>
+      </MudPaper>
+    </ItemRenderer>
 
-<br>
-<br>
+  </MudDropContainer>
+}
+
+
 
 @code {
+
   [Parameter]
   public int ProjectId { get; set; }
 
   private bool _success;
   private bool _isFormVisible;
   private bool _isLoading = true;
-  private string _boardName = string.Empty;
+
   private string? _error;
-  private ProjectDTO _projectDto;
+
+  //card
+  private string _cardName = string.Empty;
+  private string _cardDescription = string.Empty;
+  // private string _cardStatus = "Backlog";
+  // private string _cardColor = "blue";
+
+
+
+  private ProjectDTO _projectDto = new();
+  private List<CardDTO> _cards = new();
+
 
   private string[] _errors;
   private MudForm _form;
 
   protected override async Task OnInitializedAsync()
   {
-    await GetProjectById();
-    _isLoading = false;
+    try
+    {
+      await GetProjectById();
+
+      // var cardDto = new CardDTO()
+      // {
+      //   Name = "Card Name",
+      //   Description = "My Description",
+      //   Status = "Backlog",
+      //   Color = "aquamarine",
+      //   ProjectId = _projectDto.Id
+      // };
+      //
+      //
+      //   await CardService.CreateCardAsync(cardDto);
+
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
+    finally
+    {
+      _isLoading = false;
+    }
   }
 
   // DRAG AND DROP
@@ -63,19 +138,47 @@
 
   private List<DropZone> _zones = new()
   {
-    new() { Name = "Done" },
-    new() { Name = "Testing" },
-    new() { Name = "In Progress" },
-    new() { Name = "Backlog" }
+    new()
+    {
+      Name = "Done"
+    },
+    new()
+    {
+      Name = "Testing"
+    },
+    new()
+    {
+      Name = "In Progress"
+    },
+    new()
+    {
+      Name = "Backlog"
+    }
   };
 
-  private List<CardDTO> _cards = new()
-  {
-    new CardDTO() { Name = "Drag me!", Status = "Done" },
-    new CardDTO() { Name = "Or me!", Status = "Testing" },
-    new CardDTO() { Name = "Just Mud", Status = "In Progress" },
-    new CardDTO() { Name = "Just bud", Status = "Backlog" },
-  };
+  // private List<CardDTO> _cards = new()
+  // {
+  //   new CardDTO()
+  //   {
+  //     Name = "Drag me!",
+  //     Status = "Done"
+  //   },
+  //   new CardDTO()
+  //   {
+  //     Name = "Or me!",
+  //     Status = "Testing"
+  //   },
+  //   new CardDTO()
+  //   {
+  //     Name = "Just Mud",
+  //     Status = "In Progress"
+  //   },
+  //   new CardDTO()
+  //   {
+  //     Name = "Just bud",
+  //     Status = "Backlog"
+  //   },
+  // };
 
   private void ToggleForm()
   {
@@ -85,6 +188,49 @@
   private async Task GetProjectById()
   {
     _projectDto = await ProjectService.GetProjectByIdAsync(ProjectId);
+    _cards = _projectDto.Cards;
+  }
+
+  private async Task CreateCardAsync()
+  {
+    if (_projectDto == null || _projectDto.Id == 0)
+    {
+      _error = "Project not properly loaded";
+      return;
+    }
+
+    var cardDto = new CardDTO
+    {
+      Name = _cardName,
+      Description = _cardDescription,
+      Status = "Backlog",
+      Color = "blue",
+      ProjectId = _projectDto.Id
+    };
+    Console.WriteLine("card name: " + cardDto.Name);
+    Console.WriteLine("card desc: " + cardDto.Description);
+    Console.WriteLine("card color: " + cardDto.Color);
+    Console.WriteLine("card status: " + cardDto.Status);
+    Console.WriteLine("card proj id: " + cardDto.ProjectId);
+    try
+    {
+      Console.WriteLine("Project Id" + _projectDto.Id);
+
+      var createdCard = await CardService.CreateCardAsync(cardDto);
+      _cards.Add(createdCard);
+
+      _cardName = string.Empty;
+      _cardDescription = string.Empty;
+      _form?.ResetAsync();
+      _isFormVisible = false;
+
+      await OnInitializedAsync();
+      StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
   }
 
   // Temporary class
@@ -92,4 +238,5 @@
   {
     public string Name { get; init; }
   }
+
 }
