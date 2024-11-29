@@ -37,7 +37,9 @@ public class ProjectController : ControllerBase
   [HttpGet("{id}")]
   public async Task<ActionResult<Project>> GetSingleProjectFromDbAsync(int id)
   {
+
     var project = await _context.Projects.FindAsync(id);
+
     return Ok(project);
   }
 

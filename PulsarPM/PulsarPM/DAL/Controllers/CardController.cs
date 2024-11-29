@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections;
+using PulsarPM.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace PulsarPM.DAL.Controllers;
 
-using Data;
-using Shared;
+using Client.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [ApiController]
 [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
@@ -17,6 +22,22 @@ public class CardController : ControllerBase
   }
 
   //GET
+  [HttpGet("project/{projectId}")]
+  public async Task<ActionResult<ICollection<CardDTO>>> GetCardsFromDbAsync(int projectId)
+  {
+    var cards = await _context.Cards.Where(c => c.ProjectId == projectId).Select(p => new CardDTO
+    {
+      Id = p.Id,
+      Name = p.Name,
+      Description = p.Description,
+      Status = p.Status,
+      Color = p.Color,
+      ProjectId = p.ProjectId
+    }).ToListAsync();
+
+    return Ok(cards);
+  }
+
   [HttpGet("{id}")]
   public async Task<ActionResult<Card>> GetSingleCardFromDbAsync(int id)
   {

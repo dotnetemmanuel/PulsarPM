@@ -89,8 +89,7 @@ else
   //card
   private string _cardName = string.Empty;
   private string _cardDescription = string.Empty;
-  // private string _cardStatus = "Backlog";
-  // private string _cardColor = "blue";
+
 
 
 
@@ -106,18 +105,7 @@ else
     try
     {
       await GetProjectById();
-
-      // var cardDto = new CardDTO()
-      // {
-      //   Name = "Card Name",
-      //   Description = "My Description",
-      //   Status = "Backlog",
-      //   Color = "aquamarine",
-      //   ProjectId = _projectDto.Id
-      // };
-      //
-      //
-      //   await CardService.CreateCardAsync(cardDto);
+      Console.WriteLine("Cards count: " + _cards.Count);
 
     }
     catch (Exception ex)
@@ -188,17 +176,11 @@ else
   private async Task GetProjectById()
   {
     _projectDto = await ProjectService.GetProjectByIdAsync(ProjectId);
-    _cards = _projectDto.Cards;
+    _cards = await CardService.GetCardFromProjectAsync(_projectDto.Id);
   }
 
   private async Task CreateCardAsync()
   {
-    if (_projectDto == null || _projectDto.Id == 0)
-    {
-      _error = "Project not properly loaded";
-      return;
-    }
-
     var cardDto = new CardDTO
     {
       Name = _cardName,
@@ -207,23 +189,21 @@ else
       Color = "blue",
       ProjectId = _projectDto.Id
     };
-    Console.WriteLine("card name: " + cardDto.Name);
-    Console.WriteLine("card desc: " + cardDto.Description);
-    Console.WriteLine("card color: " + cardDto.Color);
-    Console.WriteLine("card status: " + cardDto.Status);
-    Console.WriteLine("card proj id: " + cardDto.ProjectId);
+
     try
     {
       Console.WriteLine("Project Id" + _projectDto.Id);
 
       var createdCard = await CardService.CreateCardAsync(cardDto);
       _cards.Add(createdCard);
+      Console.WriteLine("Cards count: " + _cards.Count);
 
       _cardName = string.Empty;
       _cardDescription = string.Empty;
       _form?.ResetAsync();
       _isFormVisible = false;
 
+      //TODO: Make sure refresh works
       await OnInitializedAsync();
       StateHasChanged();
     }

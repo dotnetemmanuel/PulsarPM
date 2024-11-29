@@ -14,5 +14,5 @@ public class CardDTO
 
   //Nav-properties
   public int ProjectId { get; set; }
-  public ProjectDTO Project { get; set; }
+  public ProjectDTO? Project { get; set; }
 }

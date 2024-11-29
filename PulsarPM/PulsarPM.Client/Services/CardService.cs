@@ -3,6 +3,7 @@
 using System.Net.Http.Json;
 using Shared;
 
+
 public class CardService
 {
   private readonly HttpClient _httpClient;
@@ -23,6 +24,12 @@ public class CardService
       throw new Exception($"Failed to create card: {response.ReasonPhrase}");
     }
     return await response.Content.ReadFromJsonAsync<CardDTO>();
+  }
+
+  public async Task<List<CardDTO>> GetCardFromProjectAsync(int projectId)
+  {
+    var response = await _httpClient.GetFromJsonAsync<List<CardDTO>>($"Card/project/{projectId}");
+    return response.ToList();
   }
   
 }
