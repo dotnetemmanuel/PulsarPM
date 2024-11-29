@@ -53,7 +53,6 @@ public class ProjectController : ControllerBase
 
       await _context.Projects.AddAsync(project);
       await _context.SaveChangesAsync();
-      
 
       var createdProjectDto = new ProjectDTO
       {
