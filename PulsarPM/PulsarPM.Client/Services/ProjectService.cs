@@ -58,7 +58,6 @@ public class ProjectService
 
   public async Task DeleteProjectAsync(ProjectDTO projectDto)
   {
-    // var response = await _httpClient.DeleteAsync($"api/Project/{projectDto.Id}" );
     var response = await _httpClient.DeleteAsync($"Project/{projectDto.Id}" );
     if (!response.IsSuccessStatusCode)
     {

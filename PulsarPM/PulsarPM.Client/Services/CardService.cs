@@ -1,8 +1,8 @@
 ﻿namespace PulsarPM.Client.Services;
 
 using System.Net.Http.Json;
+using MudBlazor;
 using Shared;
-
 
 public class CardService
 {
@@ -31,5 +31,24 @@ public class CardService
     var response = await _httpClient.GetFromJsonAsync<List<CardDTO>>($"Card/project/{projectId}");
     return response.ToList();
   }
-  
+
+  public async Task<CardDTO> UpdateCardAsync(CardDTO cardDto)
+  {
+    var response = await _httpClient.PutAsJsonAsync($"Card/project/{cardDto.Id}", cardDto);
+    if (!response.IsSuccessStatusCode)
+    {
+      throw new Exception($"Failed to update card: {response.ReasonPhrase}");
+    }
+    return await response.Content.ReadFromJsonAsync<CardDTO>();
+  }
+
+  public async Task DeleteCardAsync(CardDTO cardDto)
+  {
+    var response = await _httpClient.DeleteAsync($"Card/{cardDto.Id}");
+    if (!response.IsSuccessStatusCode)
+    {
+      throw new Exception($"Failed to delete card: {response.ReasonPhrase}");
+    }
+  }
+
 }

@@ -86,5 +86,41 @@ public class CardController : ControllerBase
     }
   }
 
+  [HttpPut("project/{id}")]
+  public async Task<ActionResult<Card>> UpdateCardToDbAsync(int id, [FromBody] CardDTO cardDto)
+  {
+    if (id != cardDto.Id)
+    {
+      return BadRequest("ID mismatch");
+    }
 
+    var cardToUpdate = await _context.Cards.FindAsync(cardDto.Id);
+    if (cardToUpdate is null)
+    {
+      return NotFound("Card not found");
+    }
+
+    cardToUpdate.Name = cardDto.Name;
+    cardToUpdate.Description = cardDto.Description;
+    cardToUpdate.Status = cardDto.Status;
+    cardToUpdate.Color = cardDto.Color;
+    cardToUpdate.ProjectId = cardDto.ProjectId;
+
+    await _context.SaveChangesAsync();
+    return Ok(cardToUpdate);
+  }
+
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<Card>> DeleteCardFromDbAsync(int id)
+  {
+    var cardToDelete = await _context.Cards.FindAsync(id);
+    if (cardToDelete is null)
+    {
+      return NotFound("Card not found");
+    }
+
+    _context.Cards.Remove(cardToDelete);
+    await _context.SaveChangesAsync();
+    return Ok(cardToDelete);
+  }
 }

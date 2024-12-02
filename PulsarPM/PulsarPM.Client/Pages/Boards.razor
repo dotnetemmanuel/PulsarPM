@@ -68,6 +68,36 @@ else
       <MudPaper Class="pa-4 my-1">
         <MudText>@context.Name</MudText>
         <MudText>@context.Description</MudText>
+        <MudIconButton OnClick="@(() => ToggleEditForm(@context))" Icon="@Icons.Material.Outlined.Edit"
+                       Color="Color.Error"/>
+        <MudIconButton OnClick="@(() => DeleteCardAsync(@context))" Icon="@Icons.Material.Outlined.Delete"
+                       Color="Color.Error"/>
+
+        @if (_editingCard == context)
+        {
+          <br>
+          <MudGrid>
+            <MudItem xs="12" sm="7">
+              <MudPaper Class="pa-4">
+                <MudForm @ref="_editForm" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                  <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
+                                RequiredError="Project name is required!"/>
+                  <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
+                  @* <MudTextField @bind-Value="_cardStatus" T="string" Label="Status"/> *@
+                  @* <MudTextField @bind-Value="_cardColor" T="string" Label="Color"/> *@
+                  @* <MudTextField @bind-Value="_projectId" T="int" Label="Project Id"/> *@
+                  <div class="d-flex align-center justify-space-between">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               Class="ml-auto" OnClick="@(() => UpdateCardAsync(@context))">
+                      Register
+                    </MudButton>
+                  </div>
+                </MudForm>
+              </MudPaper>
+            </MudItem>
+          </MudGrid>
+        }
+
       </MudPaper>
     </ItemRenderer>
 
@@ -83,6 +113,7 @@ else
 
   private bool _success;
   private bool _isFormVisible;
+  private bool _isEditFormVisible = false;
   private bool _isLoading = true;
 
   private string? _error;
@@ -90,14 +121,16 @@ else
   //card
   private string _cardName = string.Empty;
   private string _cardDescription = string.Empty;
-
+  private string _cardColor = string.Empty;
+  private string _cardStatus = string.Empty;
+  private CardDTO _editingCard;
 
   private ProjectDTO _projectDto = new();
   private List<CardDTO> _cards = new();
 
-
   private string[] _errors;
   private MudForm _form;
+  private MudForm _editForm;
   private MudDropContainer<CardDTO> _mudDropContainer;
 
   protected override async Task OnInitializedAsync()
@@ -119,9 +152,59 @@ else
   }
 
   // DRAG AND DROP
-  private void ItemUpdated(MudItemDropInfo<CardDTO> card)
+  private async Task ItemUpdated(MudItemDropInfo<CardDTO> card)
   {
-    card.Item.Status = card.DropzoneIdentifier;
+    // card.Item.Status = card.DropzoneIdentifier;
+
+    Console.WriteLine(card.Item.Name);
+    Console.WriteLine(card.Item.Description);
+    Console.WriteLine(card.Item.Color);
+    Console.WriteLine(card.Item.Status);
+    Console.WriteLine(card.Item.ProjectId);
+
+    var updatedCard = new CardDTO
+    {
+      Id = card.Item.Id,
+      Name = card.Item.Name,
+      Description = card.Item.Description,
+      Status = card.DropzoneIdentifier,
+      Color = card.Item.Color,
+      ProjectId = card.Item.ProjectId
+    };
+
+    await CardService.UpdateCardAsync(updatedCard);
+    var existingCard = _cards.FirstOrDefault(c => c.Id == updatedCard.Id);
+    existingCard.Status = card.DropzoneIdentifier;
+
+    _mudDropContainer.Refresh();
+  }
+
+
+
+  public async Task UpdateCardAsync(CardDTO cardDto)
+  {
+    try
+    {
+      cardDto.Name = _cardName;
+      cardDto.Description = _cardDescription;
+
+      await CardService.UpdateCardAsync(cardDto);
+
+      _editingCard = null;
+
+      _cardName = string.Empty;  // Clear form fields
+      _cardDescription = string.Empty;
+      _cardColor = string.Empty;
+      _cardStatus = string.Empty;
+
+      _form?.ResetAsync();  // Reset form validation state
+
+      _mudDropContainer.Refresh();
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
   }
 
   private List<DropZone> _zones = new()
@@ -173,6 +256,25 @@ else
     _isFormVisible = !_isFormVisible;
   }
 
+  private void ToggleEditForm(CardDTO cardDto)
+  {
+    if (_editingCard == cardDto)
+    {
+      Console.WriteLine("Closing the edit form.");
+
+      // If the same card is clicked again, close the form
+      _editingCard = null;
+    }
+    else
+    {
+      Console.WriteLine($"Editing card: {cardDto?.Name}");
+      _editingCard = cardDto;
+      _cardName = cardDto?.Name ?? string.Empty;
+      _cardDescription = cardDto?.Description ?? string.Empty;
+    }
+    _mudDropContainer.Refresh();
+  }
+
   private async Task GetProjectById()
   {
     _projectDto = await ProjectService.GetProjectByIdAsync(ProjectId);
@@ -204,7 +306,23 @@ else
       _isFormVisible = false;
 
       _mudDropContainer.Refresh();
-      StateHasChanged();
+      // StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
+  }
+
+  private async Task DeleteCardAsync(CardDTO cardDto)
+  {
+    try
+    {
+      await CardService.DeleteCardAsync(cardDto);
+      _cards.Remove(cardDto);
+
+      _mudDropContainer.Refresh();
+      // StateHasChanged();
     }
     catch (Exception ex)
     {
