@@ -15,7 +15,8 @@ else
 {
   <h3>@_projectDto.Name</h3>
 
-  <MudDropContainer T="CardDTO" Items="_cards" ItemsSelector="@((item, dropzone) => item.Status == dropzone)"
+  <MudDropContainer @ref="_mudDropContainer" T="CardDTO" Items="_cards"
+                    ItemsSelector="@((item, dropzone) => item.Status == dropzone)"
                     ItemDropped="ItemUpdated" Class="w-100 h-100">
     <ChildContent>
       <MudDropContainer T="DropZone" Items="_zones" ItemsSelector="@((item, dropzone) => true)" Class="d-flex w-100">
@@ -91,14 +92,13 @@ else
   private string _cardDescription = string.Empty;
 
 
-
-
   private ProjectDTO _projectDto = new();
   private List<CardDTO> _cards = new();
 
 
   private string[] _errors;
   private MudForm _form;
+  private MudDropContainer<CardDTO> _mudDropContainer;
 
   protected override async Task OnInitializedAsync()
   {
@@ -192,19 +192,18 @@ else
 
     try
     {
-      Console.WriteLine("Project Id" + _projectDto.Id);
-
       var createdCard = await CardService.CreateCardAsync(cardDto);
-      _cards.Add(createdCard);
-      Console.WriteLine("Cards count: " + _cards.Count);
+      _cards = new List<CardDTO>(_cards)
+      {
+        createdCard
+      };
 
       _cardName = string.Empty;
       _cardDescription = string.Empty;
       _form?.ResetAsync();
       _isFormVisible = false;
 
-      //TODO: Make sure refresh works
-      await OnInitializedAsync();
+      _mudDropContainer.Refresh();
       StateHasChanged();
     }
     catch (Exception ex)

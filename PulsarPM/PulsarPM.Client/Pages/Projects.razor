@@ -103,9 +103,7 @@ else
         {
             Name = _projectName,
         };
-        
-        // Log the KanbanBoard name to the console
-        Console.WriteLine($"KanbanBoard Name: {projectDto?.Name}");
+
         try
         {
             await ProjectService.CreateProjectAsync(projectDto);

@@ -38,14 +38,15 @@
     ProjectStateService.OnProjectAdded += HandleProjectAdded;
     Console.WriteLine("MainLayout subscribed to OnProjectAdded event");
   }
+
   private async Task HandleProjectAdded()
   {
     Console.WriteLine("MainLayout: Project added, triggering full StateHasChanged");
     StateHasChanged();
   }
+
   public void Dispose()
   {
     ProjectStateService.OnProjectAdded -= HandleProjectAdded;
-
   }
 }
