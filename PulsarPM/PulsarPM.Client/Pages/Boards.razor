@@ -17,15 +17,15 @@ else
 
   <MudDropContainer @ref="_mudDropContainer" T="CardDTO" Items="_cards"
                     ItemsSelector="@((item, dropzone) => item.Status == dropzone)"
-                    ItemDropped="ItemUpdated" Class="w-100 h-100">
+                    ItemDropped="ItemUpdated" Class="w-100 h-100" CanDropClass="mud-border-success">
     <ChildContent>
       <MudDropContainer T="DropZone" Items="_zones" ItemsSelector="@((item, dropzone) => true)" Class="d-flex w-100">
         <ChildContent>
           @foreach (var zone in _zones)
           {
-            <MudDropZone T="DropZone" AllowReorder Class="flex-1 mud-background-gray pa-4 py-1 mx-2 rounded">
+            <MudDropZone T="DropZone" AllowReorder="true" Class="flex-1 mud-background-gray pa-4 py-1 mx-2 rounded">
               <MudText Typo="Typo.h6">@zone.Name</MudText>
-              <MudDropZone T="CardDTO" Identifier="@zone.Name" AllowReorder
+              <MudDropZone T="CardDTO" Identifier="@zone.Name" AllowReorder="true"
                            Class="d-flex flex-column gap-3 mud-background-light px-4 py-1 mt-2 rounded"/>
               @if (zone.Name == "Backlog")
               {
