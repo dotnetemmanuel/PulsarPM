@@ -29,6 +29,10 @@ public class CardService
   public async Task<List<CardDTO>> GetCardFromProjectAsync(int projectId)
   {
     var response = await _httpClient.GetFromJsonAsync<List<CardDTO>>($"Card/project/{projectId}");
+    if (response is null)
+    {
+      throw new Exception($"No cards found for this project in the database");
+    }
     return response.ToList();
   }
 

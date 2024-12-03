@@ -32,8 +32,9 @@ public class CardController : ControllerBase
       Description = p.Description,
       Status = p.Status,
       Color = p.Color,
-      ProjectId = p.ProjectId
-    }).ToListAsync();
+      ProjectId = p.ProjectId,
+      Order = p.Order
+    }).OrderBy(c=> c.Status).ThenBy(c=> c.Order).ToListAsync();
 
     return Ok(cards);
   }
@@ -60,7 +61,8 @@ public class CardController : ControllerBase
       Description = cardDto.Description,
       Status = cardDto.Status,
       Color = cardDto.Color,
-      ProjectId = cardDto.ProjectId
+      ProjectId = cardDto.ProjectId,
+      Order = cardDto.Order
     };
     try
     {
@@ -74,7 +76,8 @@ public class CardController : ControllerBase
         Description = card.Description,
         Status = card.Status,
         Color = card.Color,
-        ProjectId = card.ProjectId
+        ProjectId = card.ProjectId,
+        Order = card.Order
 
       };
 
@@ -105,6 +108,7 @@ public class CardController : ControllerBase
     cardToUpdate.Status = cardDto.Status;
     cardToUpdate.Color = cardDto.Color;
     cardToUpdate.ProjectId = cardDto.ProjectId;
+    cardToUpdate.Order = cardDto.Order;
 
     await _context.SaveChangesAsync();
     return Ok(cardToUpdate);

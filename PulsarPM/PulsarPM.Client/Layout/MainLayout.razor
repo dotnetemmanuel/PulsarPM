@@ -7,7 +7,8 @@
     <NavMenu/>
   </div>
   @* Required *@
-  <MudThemeProvider />
+  <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
+
   <MudPopoverProvider />
 
   @* Needed for dialogs *@
@@ -16,11 +17,12 @@
   @* Needed for snackbars *@
   <MudSnackbarProvider />
   <main>
-    <div class="top-row px-4">
+    <div class="top-row px-4 bg-dark">
+      <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode"/>
       <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
     </div>
 
-    <article class="content px-4">
+    <article class="content px-4" >
       @Body
     </article>
   </main>
@@ -33,6 +35,9 @@
 </div>
 
 @code {
+  private MudTheme _theme = new();
+    private bool _isDarkMode = true;
+
   protected override void OnInitialized()
   {
     ProjectStateService.OnProjectAdded += HandleProjectAdded;
