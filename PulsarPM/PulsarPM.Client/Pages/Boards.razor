@@ -15,96 +15,6 @@ else
 {
   <h3>@_projectDto.Name</h3>
 
-
-  @* <MudDropContainer @ref="_mudDropContainer" T="CardDTO" Items="_cards.OrderBy(c => c.Order)" *@
-  @*                   ItemsSelector="@((item, dropzone) => item.Status == dropzone)" *@
-  @*                   ItemDropped="ItemUpdated" Class="w-100 h-100" CanDropClass="mud-border-success"> *@
-  @*   <ChildContent> *@
-  @*     <MudDropContainer T="DropZone" Items="_zones" ItemsSelector="@((item, dropzone) => true)" Class="d-flex w-100"> *@
-  @*       <ChildContent> *@
-  @*         @foreach (var zone in _zones) *@
-  @*         { *@
-  @*           <MudDropZone T="DropZone" AllowReorder="true" Class="flex-1 mud-background-gray pa-4 py-1 mx-2 rounded"> *@
-  @*             <MudText Typo="Typo.h6">@zone.Name</MudText> *@
-  @*             <MudDropZone T="CardDTO" Identifier="@zone.Name" AllowReorder="true" *@
-  @*                          Class="d-flex flex-column gap-3 mud-background-light px-4 py-1 mt-2 rounded"/> *@
-  @*             @if (zone.Name == "Backlog") *@
-  @*             { *@
-  @*               <MudIconButton OnClick="ToggleForm" Icon="@Icons.Material.Outlined.Add" Color="Color.Primary">Add task *@
-  @*               </MudIconButton> *@
-  @*               @if (_isFormVisible) *@
-  @*               { *@
-  @*                 <br/> *@
-  @*                 <MudGrid> *@
-  @*                   <MudItem xs="12" sm="7"> *@
-  @*                     <MudPaper Class="pa-4"> *@
-  @*                       <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors"> *@
-  @*                         <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true" *@
-  @*                                       RequiredError="Project name is required!"/> *@
-  @*                         <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/> *@
-  @*                         $1$ <MudTextField @bind-Value="_cardStatus" T="string" Label="Status"/> #1# *@
-  @*                         $1$ <MudTextField @bind-Value="_cardColor" T="string" Label="Color"/> #1# *@
-  @*                         $1$ <MudTextField @bind-Value="_projectId" T="int" Label="Project Id"/> #1# *@
-  @*                         <div class="d-flex align-center justify-space-between"> *@
-  @*                           <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)" *@
-  @*                                      Class="ml-auto" OnClick="CreateCardAsync"> *@
-  @*                             Register *@
-  @*                           </MudButton> *@
-  @*                         </div> *@
-  @*                       </MudForm> *@
-  @*                     </MudPaper> *@
-  @*                   </MudItem> *@
-  @*                 </MudGrid> *@
-  @* *@
-  @*               } *@
-  @*             } *@
-  @*           </MudDropZone> *@
-  @*         } *@
-  @*       </ChildContent> *@
-  @*     </MudDropContainer> *@
-  @*   </ChildContent> *@
-  @* *@
-  @*   <ItemRenderer> *@
-  @*     $1$ Card rendering inside drop zones #1# *@
-  @*     <MudPaper Class="pa-4 my-1"> *@
-  @*       <MudText>@context.Name</MudText> *@
-  @*       <MudText>@context.Description</MudText> *@
-  @*       <MudIconButton OnClick="@(() => ToggleEditForm(@context))" Icon="@Icons.Material.Outlined.Edit" *@
-  @*                      Color="Color.Error"/> *@
-  @*       <MudIconButton OnClick="@(() => DeleteCardAsync(@context))" Icon="@Icons.Material.Outlined.Delete" *@
-  @*                      Color="Color.Error"/> *@
-  @* *@
-  @*       @if (_editingCard == context) *@
-  @*       { *@
-  @*         <br> *@
-  @*         <MudGrid> *@
-  @*           <MudItem xs="12" sm="7"> *@
-  @*             <MudPaper Class="pa-4"> *@
-  @*               <MudForm @ref="_editForm" @bind-IsValid="@_success" @bind-Errors="@_errors"> *@
-  @*                 <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true" *@
-  @*                               RequiredError="Project name is required!"/> *@
-  @*                 <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/> *@
-  @*                 $1$ <MudTextField @bind-Value="_cardStatus" T="string" Label="Status"/> #1# *@
-  @*                 $1$ <MudTextField @bind-Value="_cardColor" T="string" Label="Color"/> #1# *@
-  @*                 $1$ <MudTextField @bind-Value="_projectId" T="int" Label="Project Id"/> #1# *@
-  @*                 <div class="d-flex align-center justify-space-between"> *@
-  @*                   <MudButton Variant="Variant.Filled" Color="Color.Primary" *@
-  @*                              Class="ml-auto" OnClick="@(() => UpdateCardAsync(@context))"> *@
-  @*                     Register *@
-  @*                   </MudButton> *@
-  @*                 </div> *@
-  @*               </MudForm> *@
-  @*             </MudPaper> *@
-  @*           </MudItem> *@
-  @*         </MudGrid> *@
-  @*       } *@
-  @* *@
-  @*     </MudPaper> *@
-  @*   </ItemRenderer> *@
-  @* *@
-  @* </MudDropContainer> *@
-
-
   <MudDropContainer T="CardDTO" @ref="_mudDropContainer" Items="@_cards"
                     ItemsSelector="@((item, column) => item.Status == column)" ItemDropped="ItemUpdated"
                     Class="d-flex flex-row">
@@ -113,7 +23,7 @@ else
       {
         <MudPaper Elevation="0" Width="224px" MinHeight="400px" Class="pa-4 ma-4 d-flex flex-column  rounded-lg">
           <MudToolBar Gutters="false">
-            <MudText Typo="Typo.subtitle1"><b>@item.Name</b></MudText>
+            <MudText Style="font-size: 1.5rem;" Typo="Typo.subtitle1"><b>@item.Name</b></MudText>
             <MudSpacer/>
             <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
                      TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column"
@@ -125,39 +35,55 @@ else
             </MudMenu>
           </MudToolBar>
           <MudDropZone T="CardDTO" Identifier="@item.Name" Class="mud-height-full" AllowReorder="true"/>
-          @if (!_isFormVisible && item.Name == "Backlog")
+          @if (item.Name == "Backlog")
           {
-            <MudPaper Elevation="25" Class="pa-2 rounded-lg">
-              <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
-                            RequiredError="Project name is required!"/>
-              <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
-              <MudButton OnClick="@(CreateCardAsync)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add
-                Card
-              </MudButton>
-            </MudPaper>
+
+            <div style="display: flex; justify-content: end">
+              <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
+                             Icon="@(!_isFormVisible ? Icons.Material.Rounded.Add : Icons.Material.Rounded.Remove)" OnClick="ToggleForm"></MudIconButton>
+            </div>
+
+            @if (_isFormVisible)
+            {
+          <br/>
+              <MudPaper Elevation="25" Class="pa-2 rounded-lg">
+                <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
+                              RequiredError="Project name is required!"/>
+                <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
+                <MudButton OnClick="@(CreateCardAsync)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add
+                  Card
+                </MudButton>
+              </MudPaper>
+            }
           }
 
         </MudPaper>
       }
-      <MudPaper Class="pa-4" Elevation="0" Width="224px">
-        @* @if (_addSectionOpen) *@
-        @* { *@
-        @*     <MudPaper Elevation="0" Width="224px" Class="pa-4 d-flex flex-column mud-background-gray rounded-lg"> *@
-        @*         <EditForm Model="@newSectionModel" OnValidSubmit="OnValidSectionSubmit"> *@
-        @*             <DataAnnotationsValidator/> *@
-        @*             <MudTextField @bind-Value="newSectionModel.Name" For="@(() => newSectionModel.Name)" Placeholder="New Section" Underline="false"></MudTextField> *@
-        @*             <MudButton ButtonType="ButtonType.Submit" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add Section</MudButton> *@
-        @*         </EditForm> *@
-        @*     </MudPaper> *@
-        @* } *@
-        @* else *@
-        @* { *@
-        @*     <MudButton OnClick="OpenAddNewSection" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="rounded-lg py-2" FullWidth="true">Add Section</MudButton> *@
-        @* } *@
-      </MudPaper>
+      @* <MudPaper Class="pa-4" Elevation="0" Width="224px"> *@
+      @* @if (_addSectionOpen) *@
+      @* { *@
+      @*     <MudPaper Elevation="0" Width="224px" Class="pa-4 d-flex flex-column mud-background-gray rounded-lg"> *@
+      @*         <EditForm Model="@newSectionModel" OnValidSubmit="OnValidSectionSubmit"> *@
+      @*             <DataAnnotationsValidator/> *@
+      @*             <MudTextField @bind-Value="newSectionModel.Name" For="@(() => newSectionModel.Name)" Placeholder="New Section" Underline="false"></MudTextField> *@
+      @*             <MudButton ButtonType="ButtonType.Submit" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add Section</MudButton> *@
+      @*         </EditForm> *@
+      @*     </MudPaper> *@
+      @* } *@
+      @* else *@
+      @* { *@
+      @*     <MudButton OnClick="OpenAddNewSection" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="rounded-lg py-2" FullWidth="true">Add Section</MudButton> *@
+      @* } *@
+      @* </MudPaper> *@
     </ChildContent>
     <ItemRenderer>
-      <MudPaper Elevation="25" Class="pa-4 rounded-lg my-3">@context.Name</MudPaper>
+      <MudPaper Elevation="25" Class="pa-4 rounded-lg my-3">
+        @* <MudText>@context.Name</MudText> *@
+        <MudNavGroup Title="@context.Name" style="font-size: .95rem">
+          <MudText Style="font-weight: lighter; font-size: .9rem" Class="pa-4">@context.Description</MudText>
+        </MudNavGroup>
+
+      </MudPaper>
     </ItemRenderer>
   </MudDropContainer>
 
@@ -303,102 +229,33 @@ else
   // DRAG AND DROP
   private async Task ItemUpdated(MudItemDropInfo<CardDTO> card)
   {
+
     if (card.Item.Status != card.DropzoneIdentifier)
     {
       card.Item.Status = card.DropzoneIdentifier;
     }
-    card.Item.Order = card.IndexInZone;
+    // card.Item.Order = card.IndexInZone;
+    var zoneCards = _cards.Where(c => c.Status == card.DropzoneIdentifier).OrderBy(c => c.Order).ToList();
 
-    // Console.WriteLine(card.Item.Name);
-    // Console.WriteLine(card.Item.Description);
-    // Console.WriteLine(card.Item.Color);
-    // Console.WriteLine(card.Item.Status);
-    // Console.WriteLine(card.Item.ProjectId);
-    _cards.Remove(card.Item);
-    _cards.Insert(card.IndexInZone, card.Item);
-    Console.WriteLine($"Item {card.Item.Name} moved to index {card.IndexInZone} in zone {card.DropzoneIdentifier}");
+    zoneCards.Remove(card.Item);
+    zoneCards.Insert(card.IndexInZone, card.Item);
 
-    // var updatedCard = new CardDTO
-    // {
-    //   Id = card.Item.Id,
-    //   Name = card.Item.Name,
-    //   Description = card.Item.Description,
-    //   Status = card.DropzoneIdentifier,
-    //   Color = card.Item.Color,
-    //   ProjectId = card.Item.ProjectId,
-    //   Order = card.IndexInZone
-    // };
-    //
-    // await CardService.UpdateCardAsync(updatedCard);
-
-    for (int i = 0; i < _cards.Count; i++)
+    for (int i = 0; i < zoneCards.Count; i++)
     {
-      _cards[i].Order = i;
-
-      await CardService.UpdateCardAsync(_cards[i]);
+      zoneCards[i].Order = i;
     }
 
-    // var cardsInZone = _cards
-    //   .Where(c => c.Status == card.DropzoneIdentifier)
-    //   .OrderBy(c => c.Order)
-    //   .ToList();
-    //
-    // int newOrder;
-    //
-    // if (card.IndexInZone >= cardsInZone.Count)
-    // {
-    //   // Dropping at the end
-    //   newOrder = cardsInZone.Any()
-    //     ? cardsInZone.Max(c => c.Order) + 1
-    //     : 0;
-    // }
-    // else
-    // {
-    //   // Dropping between items
-    //   var targetCard = cardsInZone[card.IndexInZone];
-    //   newOrder = targetCard.Order;
-    //   if (card.Item.Order < newOrder)
-    //   {
-    //     targetCard.Order--;
-    //     await CardService.UpdateCardAsync(targetCard);
-    //
-    //     // Update any cards that have the same order as the target
-    //     var cardsToUpdate = cardsInZone.Where(c =>
-    //       c.Order == targetCard.Order &&
-    //       c.Id != targetCard.Id &&
-    //       c.Id != card.Item.Id);
-    //
-    //     foreach (var c in cardsToUpdate)
-    //     {
-    //       c.Order--;
-    //       await CardService.UpdateCardAsync(c);
-    //     }
-    //   }
-    // }
-    //
-    //
-    // var updatedCard = new CardDTO
-    // {
-    //   Id = card.Item.Id,
-    //   Name = card.Item.Name,
-    //   Description = card.Item.Description,
-    //   Status = card.DropzoneIdentifier,
-    //   Color = card.Item.Color,
-    //   ProjectId = card.Item.ProjectId,
-    //   Order = newOrder
-    // };
-    //
-    // await CardService.UpdateCardAsync(updatedCard);
-    //
-    // var index = _cards.FindIndex(c => c.Id == updatedCard.Id);
-    // if (index != -1)
-    // {
-    //   _cards[index] = updatedCard;
-    // }
+    _cards = _cards.Except(zoneCards).Concat(zoneCards).ToList();
+    foreach (var updatedCard in zoneCards)
+    {
+      await CardService.UpdateCardAsync(updatedCard);
+    }
 
-    // _cards = new List<CardDTO>(_cards);
+
     _mudDropContainer.Refresh();
     StateHasChanged();
+    Console.WriteLine($"Item {card.Item.Name} moved to index {card.IndexInZone} in zone {card.DropzoneIdentifier}");
+
   }
 
   public async Task UpdateCardAsync(CardDTO cardDto)
