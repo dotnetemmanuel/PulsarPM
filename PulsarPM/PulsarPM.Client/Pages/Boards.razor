@@ -79,9 +79,25 @@ else
     <ItemRenderer>
       <MudPaper Elevation="25" Class="pa-4 rounded-lg my-3">
         @* <MudText>@context.Name</MudText> *@
+
+        <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
+                       Icon="@Icons.Material.Rounded.Edit" OnClick="() => ToggleEditForm(context)"></MudIconButton>@if (_isEditFormVisible && _cardName == context.Name)
+        {
+          <MudPaper Elevation="25" Class="pa-2 rounded-lg">
+            <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
+                          RequiredError="Project name is required!"/>
+            <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
+            <MudButton OnClick="() => UpdateCardAsync(context)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Save
+              Changes
+            </MudButton>
+          </MudPaper>
+        }
         <MudNavGroup Title="@context.Name" style="font-size: .95rem">
+
           <MudText Style="font-weight: lighter; font-size: .9rem" Class="pa-4">@context.Description</MudText>
+
         </MudNavGroup>
+
 
       </MudPaper>
     </ItemRenderer>
@@ -165,6 +181,8 @@ else
 
   private void ToggleEditForm(CardDTO cardDto)
   {
+    _isEditFormVisible = !_isEditFormVisible;
+
     if (_editingCard == cardDto)
     {
       Console.WriteLine("Closing the edit form.");
@@ -275,6 +293,7 @@ else
       _cardStatus = string.Empty;
 
       _form?.ResetAsync();// Reset form validation state
+      _isEditFormVisible = false;
 
       _mudDropContainer.Refresh();
     }
