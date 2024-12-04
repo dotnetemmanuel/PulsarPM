@@ -40,12 +40,13 @@ else
 
             <div style="display: flex; justify-content: end">
               <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
-                             Icon="@(!_isFormVisible ? Icons.Material.Rounded.Add : Icons.Material.Rounded.Remove)" OnClick="ToggleForm"></MudIconButton>
+                             Icon="@(!_isFormVisible ? Icons.Material.Rounded.Add : Icons.Material.Rounded.Remove)"
+                             OnClick="ToggleForm"></MudIconButton>
             </div>
 
             @if (_isFormVisible)
             {
-          <br/>
+              <br/>
               <MudPaper Elevation="25" Class="pa-2 rounded-lg">
                 <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
                               RequiredError="Project name is required!"/>
@@ -81,7 +82,10 @@ else
         @* <MudText>@context.Name</MudText> *@
 
         <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
-                       Icon="@Icons.Material.Rounded.Edit" OnClick="() => ToggleEditForm(context)"></MudIconButton>@if (_isEditFormVisible && _cardName == context.Name)
+                      Icon="@Icons.Material.Rounded.Edit" OnClick="() => ToggleEditForm(context)"></MudIconButton>
+        <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
+                      Icon="@Icons.Material.Rounded.Delete" OnClick="() => DeleteCardAsync(context)"></MudIconButton>
+        @if (_isEditFormVisible && _cardName == context.Name)
         {
           <MudPaper Elevation="25" Class="pa-2 rounded-lg">
             <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
@@ -93,9 +97,7 @@ else
           </MudPaper>
         }
         <MudNavGroup Title="@context.Name" style="font-size: .95rem">
-
           <MudText Style="font-weight: lighter; font-size: .9rem" Class="pa-4">@context.Description</MudText>
-
         </MudNavGroup>
 
 
