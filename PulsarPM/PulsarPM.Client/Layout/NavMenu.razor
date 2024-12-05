@@ -8,7 +8,7 @@
 
 @* @implements IDisposable *@
 
-@inject ProjectService ProjectService
+@inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject ProjectStateService ProjectStateService
 
@@ -105,7 +105,7 @@
         @foreach (var project in _projects)
         {
           <MudNavGroup Title="@project.Name">
-            <MudNavLink Href="@($"/board/{project.Id}")">Board</MudNavLink>
+            <MudNavLink OnClick="@(() => NavigateToBoard(project.Id))">Board</MudNavLink>
           </MudNavGroup>
         }
       }
@@ -138,7 +138,6 @@
       ProjectStateService.OnProjectAdded += RefreshMenuAsync;
       Console.WriteLine("Navmenu subscribed to OnProjectAdded");
       _projects = await ProjectService.GetProjectsAsync();
-
     }
     catch (Exception ex)
     {
@@ -156,6 +155,11 @@
     Console.WriteLine("NavMenu is refreshing");
     await OnInitializedAsync();
     StateHasChanged();
+  }
+
+  private void NavigateToBoard(int projectId)
+  {
+    NavigationManager.NavigateTo($"/board/{projectId}", forceLoad: true);
   }
 
   public void Dispose()
