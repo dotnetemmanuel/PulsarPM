@@ -7,7 +7,7 @@ using Shared;
 public interface ICardService
 {
   Task<CardDTO> CreateCardAsync(CardDTO cardDto);
-  Task<List<CardDTO>> GetCardFromProjectAsync(int projectId);
+  Task<List<CardDTO>> GetCardsFromProjectAsync(int projectId);
   Task<CardDTO> UpdateCardAsync(CardDTO cardDto);
   Task DeleteCardAsync(CardDTO cardDto);
 }
@@ -33,7 +33,7 @@ public class CardService : ICardService
     return await response.Content.ReadFromJsonAsync<CardDTO>();
   }
 
-  public async Task<List<CardDTO>> GetCardFromProjectAsync(int projectId)
+  public async Task<List<CardDTO>> GetCardsFromProjectAsync(int projectId)
   {
     var response = await _httpClient.GetFromJsonAsync<List<CardDTO>>($"Card/project/{projectId}");
     if (response is null)

@@ -205,7 +205,7 @@ else
   private async Task GetProjectById()
   {
     _projectDto = await ProjectService.GetProjectByIdAsync(ProjectId);
-    _cards = await CardService.GetCardFromProjectAsync(_projectDto.Id);
+    _cards = await CardService.GetCardsFromProjectAsync(_projectDto.Id);
   }
 
   private async Task CreateCardAsync()
