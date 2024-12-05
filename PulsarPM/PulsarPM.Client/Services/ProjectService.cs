@@ -7,7 +7,16 @@ using System.Threading.Tasks;
 using Shared;
 
 namespace PulsarPM.Client.Services;
-public class ProjectService
+
+public interface IProjectService
+{
+  Task<List<ProjectDTO>> GetProjectsAsync();
+  Task<ProjectDTO> GetProjectByIdAsync(int projectId);
+  Task<ProjectDTO> CreateProjectAsync(ProjectDTO projectDto);
+  Task DeleteProjectAsync(ProjectDTO projectDto);
+}
+
+public class ProjectService : IProjectService
 {
   private readonly HttpClient _httpClient;
   private readonly ILogger<ProjectService> _logger;

@@ -4,6 +4,7 @@ using PulsarPM.Client;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
 using MudBlazor.Services;
 using PulsarPM.Client.Services;
 
@@ -16,8 +17,8 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(new Uri(builder.HostEnvironment.BaseAddress), "api/") });
 
 // builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddScoped<ProjectService>();
-builder.Services.AddScoped<CardService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddSingleton<ProjectStateService>();
 builder.Services.AddLogging();
 

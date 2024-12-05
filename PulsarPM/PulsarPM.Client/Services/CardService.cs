@@ -4,11 +4,18 @@ using System.Net.Http.Json;
 using MudBlazor;
 using Shared;
 
-public class CardService
+public interface ICardService
+{
+  Task<CardDTO> CreateCardAsync(CardDTO cardDto);
+  Task<List<CardDTO>> GetCardFromProjectAsync(int projectId);
+  Task<CardDTO> UpdateCardAsync(CardDTO cardDto);
+  Task DeleteCardAsync(CardDTO cardDto);
+}
+
+public class CardService : ICardService
 {
   private readonly HttpClient _httpClient;
   private readonly ILogger<CardService> _logger;
-
 
   public CardService(HttpClient httpClient, ILogger<CardService> logger)
   {

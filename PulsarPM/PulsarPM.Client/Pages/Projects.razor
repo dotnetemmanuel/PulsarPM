@@ -4,7 +4,7 @@
 @using PulsarPM.Client.Layout
 @using PulsarPM.Client.Services
 @using Shared
-@inject ProjectService ProjectService
+@inject IProjectService ProjectService
 @inject ProjectStateService ProjectStateService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveAuto
@@ -25,9 +25,9 @@
                                   RequiredError="Project name is required!"/>
 
                     <div class="d-flex align-center justify-space-between">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)"
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                    Class="ml-auto" OnClick="CreateProjectAsync">
-                            Register
+                            Create Project
                         </MudButton>
                     </div>
                 </MudForm>
