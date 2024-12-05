@@ -7,9 +7,11 @@ using Shared;
 namespace PulsarPM.DAL.Controllers;
 
 using Client.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [ApiController]
-[Route("api/[controller]")]
+[Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
 public class ProjectController : ControllerBase
 {
   private readonly ApplicationDbContext _context;
@@ -35,34 +37,51 @@ public class ProjectController : ControllerBase
   [HttpGet("{id}")]
   public async Task<ActionResult<Project>> GetSingleProjectFromDbAsync(int id)
   {
+
     var project = await _context.Projects.FindAsync(id);
+
     return Ok(project);
   }
 
   [HttpPost]
   public async Task<ActionResult<Project>> CreateProjectToDbAsync([FromBody] ProjectDTO projectDto)
   {
-    var project = new Project
+    try
     {
-      Name = projectDto.Name
-    };
+      var project = new Project
+      {
+        Name = projectDto.Name,
+      };
 
-    await _context.Projects.AddAsync(project);
-    await _context.SaveChangesAsync();
-    return Ok(project);
+      await _context.Projects.AddAsync(project);
+      await _context.SaveChangesAsync();
+
+      var createdProjectDto = new ProjectDTO
+      {
+        Id = project.Id,
+        Name = project.Name,
+       
+      };
+      return Ok(createdProjectDto);
+    }
+    catch (Exception ex)
+    {
+      return StatusCode(500, $"Internal server error: {ex.Message}");
+    }
+
   }
 
   [HttpDelete("{id}")]
   public async Task<ActionResult<Project>> DeleteProjectFromDbAsync(int id)
   {
-   var projectToDelete = await _context.Projects.FindAsync(id);
-   if (projectToDelete is null)
-   {
-     return NotFound("Project not found");
-   }
+    var projectToDelete = await _context.Projects.FindAsync(id);
+    if (projectToDelete is null)
+    {
+      return NotFound("Project not found");
+    }
 
-   _context.Projects.Remove(projectToDelete);
-   await _context.SaveChangesAsync();
-   return Ok(projectToDelete);
+    _context.Projects.Remove(projectToDelete);
+    await _context.SaveChangesAsync();
+    return Ok(projectToDelete);
   }
 }

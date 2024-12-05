@@ -1,0 +1,330 @@
+﻿@page "/board/{ProjectId:int}"
+@using PulsarPM.Client.Services
+@using Shared
+
+@inject ProjectService ProjectService
+@inject CardService CardService
+
+@rendermode InteractiveAuto
+
+@if (_isLoading)
+{
+  <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+}
+else
+{
+  <h3>@_projectDto.Name</h3>
+
+  <MudDropContainer T="CardDTO" @ref="_mudDropContainer" Items="@_cards"
+                    ItemsSelector="@((item, column) => item.Status == column)" ItemDropped="ItemUpdated"
+                    Class="d-flex flex-row">
+    <ChildContent>
+      @foreach (var item in _zones)
+      {
+        <MudPaper Elevation="0" Width="224px" MinHeight="400px" Class="pa-4 ma-4 d-flex flex-column  rounded-lg">
+          <MudToolBar Gutters="false">
+            <MudText Style="font-size: 1.5rem;" Typo="Typo.subtitle1"><b>@item.Name</b></MudText>
+            <MudSpacer/>
+            <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight"
+                     TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column"
+                     PopoverClass="mud-elevation-25">
+              @* <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeleteSection(item))">Delete Section</MudButton> *@
+              <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit">Rename
+                Section
+              </MudButton>
+            </MudMenu>
+          </MudToolBar>
+          <MudDropZone T="CardDTO" Identifier="@item.Name" Class="mud-height-full" AllowReorder="true"/>
+          @if (item.Name == "Backlog")
+          {
+
+            <div style="display: flex; justify-content: end">
+              <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
+                             Icon="@(!_isFormVisible ? Icons.Material.Rounded.Add : Icons.Material.Rounded.Remove)"
+                             OnClick="ToggleForm"></MudIconButton>
+            </div>
+
+            @if (_isFormVisible)
+            {
+              <br/>
+              <MudPaper Elevation="25" Class="pa-2 rounded-lg">
+                <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
+                              RequiredError="Project name is required!"/>
+                <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
+                <MudButton OnClick="@(CreateCardAsync)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add
+                  Card
+                </MudButton>
+              </MudPaper>
+            }
+          }
+
+        </MudPaper>
+      }
+      @* <MudPaper Class="pa-4" Elevation="0" Width="224px"> *@
+      @* @if (_addSectionOpen) *@
+      @* { *@
+      @*     <MudPaper Elevation="0" Width="224px" Class="pa-4 d-flex flex-column mud-background-gray rounded-lg"> *@
+      @*         <EditForm Model="@newSectionModel" OnValidSubmit="OnValidSectionSubmit"> *@
+      @*             <DataAnnotationsValidator/> *@
+      @*             <MudTextField @bind-Value="newSectionModel.Name" For="@(() => newSectionModel.Name)" Placeholder="New Section" Underline="false"></MudTextField> *@
+      @*             <MudButton ButtonType="ButtonType.Submit" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add Section</MudButton> *@
+      @*         </EditForm> *@
+      @*     </MudPaper> *@
+      @* } *@
+      @* else *@
+      @* { *@
+      @*     <MudButton OnClick="OpenAddNewSection" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="rounded-lg py-2" FullWidth="true">Add Section</MudButton> *@
+      @* } *@
+      @* </MudPaper> *@
+    </ChildContent>
+    <ItemRenderer>
+      <MudPaper Elevation="25" Class="pa-4 rounded-lg my-3">
+        @* <MudText>@context.Name</MudText> *@
+
+        <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
+                      Icon="@Icons.Material.Rounded.Edit" OnClick="() => ToggleEditForm(context)"></MudIconButton>
+        <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
+                      Icon="@Icons.Material.Rounded.Delete" OnClick="() => DeleteCardAsync(context)"></MudIconButton>
+        @if (_isEditFormVisible && _cardName == context.Name)
+        {
+          <MudPaper Elevation="25" Class="pa-2 rounded-lg">
+            <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
+                          RequiredError="Project name is required!"/>
+            <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
+            <MudButton OnClick="() => UpdateCardAsync(context)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Save
+              Changes
+            </MudButton>
+          </MudPaper>
+        }
+        <MudNavGroup Title="@context.Name" style="font-size: .95rem">
+          <MudText Style="font-weight: lighter; font-size: .9rem" Class="pa-4">@context.Description</MudText>
+        </MudNavGroup>
+
+
+      </MudPaper>
+    </ItemRenderer>
+  </MudDropContainer>
+
+}
+
+
+
+@code {
+
+
+  [Parameter]
+  public int ProjectId { get; set; }
+
+  private bool _success;
+  private bool _isFormVisible;
+  private bool _isEditFormVisible = false;
+  private bool _isLoading = true;
+
+  private string? _error;
+
+  //card
+  private string _cardName = string.Empty;
+  private string _cardDescription = string.Empty;
+  private string _cardColor = string.Empty;
+  private string _cardStatus = string.Empty;
+  private CardDTO _editingCard;
+
+  private ProjectDTO _projectDto = new();
+  private List<CardDTO> _cards = new();
+
+  private string[] _errors;
+  private MudForm _form;
+  private MudForm _editForm;
+  private MudDropContainer<CardDTO> _mudDropContainer;
+
+  protected override async Task OnInitializedAsync()
+  {
+    try
+    {
+      await GetProjectById();
+      Console.WriteLine("Cards count: " + _cards.Count);
+
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
+    finally
+    {
+      _isLoading = false;
+    }
+  }
+
+
+  private List<DropZone> _zones = new()
+  {
+    new()
+    {
+      Name = "Done"
+    },
+    new()
+    {
+      Name = "Testing"
+    },
+    new()
+    {
+      Name = "In Progress"
+    },
+    new()
+    {
+      Name = "Backlog"
+    }
+  };
+
+  private void ToggleForm()
+  {
+    _isFormVisible = !_isFormVisible;
+  }
+
+  private void ToggleEditForm(CardDTO cardDto)
+  {
+    _isEditFormVisible = !_isEditFormVisible;
+
+    if (_editingCard == cardDto)
+    {
+      Console.WriteLine("Closing the edit form.");
+
+      // If the same card is clicked again, close the form
+      _editingCard = null;
+    }
+    else
+    {
+      Console.WriteLine($"Editing card: {cardDto?.Name}");
+      _editingCard = cardDto;
+      _cardName = cardDto?.Name ?? string.Empty;
+      _cardDescription = cardDto?.Description ?? string.Empty;
+    }
+    _mudDropContainer.Refresh();
+  }
+
+  private async Task GetProjectById()
+  {
+    _projectDto = await ProjectService.GetProjectByIdAsync(ProjectId);
+    _cards = await CardService.GetCardFromProjectAsync(_projectDto.Id);
+  }
+
+  private async Task CreateCardAsync()
+  {
+    var cardCount = _cards
+      .Where(c => c.Status == "Backlog")
+      .Select(c => c.Order)
+      .DefaultIfEmpty(0)
+      .Max();
+
+    var cardDto = new CardDTO
+    {
+      Name = _cardName,
+      Description = _cardDescription,
+      Status = "Backlog",
+      Color = "blue",
+      ProjectId = _projectDto.Id,
+      //Order is set depending on number of cards in Backlog +1
+      Order = cardCount + 1
+    };
+
+    try
+    {
+      var createdCard = await CardService.CreateCardAsync(cardDto);
+      _cards.Add(createdCard);
+
+      _cardName = string.Empty;
+      _cardDescription = string.Empty;
+      _form?.ResetAsync();
+      _isFormVisible = false;
+
+      _mudDropContainer.Refresh();
+      StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
+  }
+
+  // DRAG AND DROP
+  private async Task ItemUpdated(MudItemDropInfo<CardDTO> card)
+  {
+
+    if (card.Item.Status != card.DropzoneIdentifier)
+    {
+      card.Item.Status = card.DropzoneIdentifier;
+    }
+    // card.Item.Order = card.IndexInZone;
+    var zoneCards = _cards.Where(c => c.Status == card.DropzoneIdentifier).OrderBy(c => c.Order).ToList();
+
+    zoneCards.Remove(card.Item);
+    zoneCards.Insert(card.IndexInZone, card.Item);
+
+    for (int i = 0; i < zoneCards.Count; i++)
+    {
+      zoneCards[i].Order = i;
+    }
+
+    _cards = _cards.Except(zoneCards).Concat(zoneCards).ToList();
+    foreach (var updatedCard in zoneCards)
+    {
+      await CardService.UpdateCardAsync(updatedCard);
+    }
+
+
+    _mudDropContainer.Refresh();
+    StateHasChanged();
+    Console.WriteLine($"Item {card.Item.Name} moved to index {card.IndexInZone} in zone {card.DropzoneIdentifier}");
+
+  }
+
+  public async Task UpdateCardAsync(CardDTO cardDto)
+  {
+    try
+    {
+      cardDto.Name = _cardName;
+      cardDto.Description = _cardDescription;
+
+      await CardService.UpdateCardAsync(cardDto);
+
+      _editingCard = null;
+
+      _cardName = string.Empty;// Clear form fields
+      _cardDescription = string.Empty;
+      _cardColor = string.Empty;
+      _cardStatus = string.Empty;
+
+      _form?.ResetAsync();// Reset form validation state
+      _isEditFormVisible = false;
+
+      _mudDropContainer.Refresh();
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
+  }
+
+  private async Task DeleteCardAsync(CardDTO cardDto)
+  {
+    try
+    {
+      await CardService.DeleteCardAsync(cardDto);
+      _cards.Remove(cardDto);
+
+      _mudDropContainer.Refresh();
+      // StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
+  }
+
+  // Temporary class
+  private class DropZone
+  {
+    public string Name { get; init; }
+  }
+
+}

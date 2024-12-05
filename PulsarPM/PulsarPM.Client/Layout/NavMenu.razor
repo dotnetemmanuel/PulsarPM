@@ -10,6 +10,7 @@
 
 @inject ProjectService ProjectService
 @inject NavigationManager NavigationManager
+@inject ProjectStateService ProjectStateService
 
 @* <div class="top-row ps-3 navbar navbar-dark"> *@
 @*   <div class="container-fluid"> *@
@@ -88,19 +89,23 @@
 @*Mud Nav menu*@
 <MudPaper Width="250px" Class="py-3" Elevation="0">
   <MudNavMenu>
-    
+    <MudNavLink Href="/projects">All my projects</MudNavLink>
+
     <MudNavGroup Title="Projects" Expanded="true">
       @*wait for Api to load *@
       @if (_isLoading)
       {
-        <MudText Typo="Typo.subtitle1">Loading projects...</MudText>
+        <MudText Typo="Typo.subtitle1">
+          <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true"/>
+          Loading...
+        </MudText>
       }
       else if (_projects.Any())
       {
         @foreach (var project in _projects)
         {
           <MudNavGroup Title="@project.Name">
-            <MudNavLink Href="/boards">Boards</MudNavLink>
+            <MudNavLink Href="@($"/board/{project.Id}")">Board</MudNavLink>
           </MudNavGroup>
         }
       }
@@ -110,32 +115,34 @@
       }
 
     </MudNavGroup>
-    
+
     <MudNavLink Href="/Account/Login">Sign In</MudNavLink>
 
     <MudNavLink Href="/about">About</MudNavLink>
+
   </MudNavMenu>
 </MudPaper>
 
 
 @code{
+
+
+  private bool renderFlag;
   private bool _isLoading = true;
+  public List<ProjectDTO> _projects = new();
+
   protected override async Task OnInitializedAsync()
   {
     try
     {
-      
+      ProjectStateService.OnProjectAdded += RefreshMenuAsync;
+      Console.WriteLine("Navmenu subscribed to OnProjectAdded");
       _projects = await ProjectService.GetProjectsAsync();
-      // var startTime = DateTime.UtcNow;
-      // Logger.LogInformation("Fetching projects from API");
-      
-      // var endTime = DateTime.UtcNow;
-      // Logger.LogInformation($"Projects successfully loaded in {(endTime - startTime).TotalMilliseconds} ms");
+
     }
     catch (Exception ex)
     {
-      // _error = ex.Message;
-      // Logger.LogError(ex, "Error loading projects");
+
     }
     finally
     {
@@ -143,28 +150,17 @@
       StateHasChanged();
     }
   }
-  private List<ProjectDTO> _projects = new();
-  
+
+  private async Task RefreshMenuAsync()
+  {
+    Console.WriteLine("NavMenu is refreshing");
+    await OnInitializedAsync();
+    StateHasChanged();
+  }
+
+  public void Dispose()
+  {
+    ProjectStateService.OnProjectAdded -= RefreshMenuAsync;
+  }
 
 }
-
-@* @code { *@
-@*   private string? currentUrl; *@
-@* *@
-@*   protected override void OnInitialized() *@
-@*   { *@
-@*     currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri); *@
-@*     NavigationManager.LocationChanged += OnLocationChanged; *@
-@*   } *@
-@* *@
-@*   private void OnLocationChanged(object? sender, LocationChangedEventArgs e) *@
-@*   { *@
-@*     currentUrl = NavigationManager.ToBaseRelativePath(e.Location); *@
-@*     StateHasChanged(); *@
-@*   } *@
-@* *@
-@*   public void Dispose() *@
-@*   { *@
-@*     NavigationManager.LocationChanged -= OnLocationChanged; *@
-@*   } *@
-@* } *@

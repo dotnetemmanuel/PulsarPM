@@ -9,15 +9,15 @@ using Microsoft.AspNetCore.Identity;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
   public DbSet<Project> Projects { get; set; }
-  public DbSet<KanbanBoard> KanbanBoards { get; set; }
+  // public DbSet<KanbanBoard> KanbanBoards { get; set; }
   public DbSet<Card> Cards { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
-    modelBuilder.Entity<KanbanBoard>()
+    modelBuilder.Entity<Project>()
       .HasMany(k => k.Cards)
-      .WithOne(c => c.KanbanBoard)
-      .HasForeignKey(c => c.KanbanBoardId)
+      .WithOne(c => c.Project)
+      .HasForeignKey(c => c.ProjectId)
       .OnDelete(DeleteBehavior.Cascade);
 
     base.OnModelCreating(modelBuilder);

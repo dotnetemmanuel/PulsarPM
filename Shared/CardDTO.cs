@@ -11,8 +11,9 @@ public class CardDTO
   public string? Description { get; set; }
   public string Status { get; set; }
   public string? Color { get; set; }
+  public int Order { get; set; }
 
   //Nav-properties
-  public int KanbanBoardId { get; set; }
-  public KanbanBoardDTO KanbanBoard { get; set; }
+  public int ProjectId { get; set; }
+  public ProjectDTO? Project { get; set; }
 }

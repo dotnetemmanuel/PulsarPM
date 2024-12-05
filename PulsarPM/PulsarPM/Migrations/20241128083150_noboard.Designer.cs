@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PulsarPM.Data;
 
@@ -11,9 +12,11 @@ using PulsarPM.Data;
 namespace PulsarPM.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241128083150_noboard")]
+    partial class noboard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,12 +172,12 @@ namespace PulsarPM.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("KanbanBoardId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
@@ -185,9 +188,34 @@ namespace PulsarPM.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("KanbanBoardId");
+
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Cards");
+                });
+
+            modelBuilder.Entity("PulsarPM.DAL.KanbanBoard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .IsUnique();
+
+                    b.ToTable("KanbanBoard");
                 });
 
             modelBuilder.Entity("PulsarPM.DAL.Project", b =>
@@ -328,6 +356,10 @@ namespace PulsarPM.Migrations
 
             modelBuilder.Entity("PulsarPM.DAL.Card", b =>
                 {
+                    b.HasOne("PulsarPM.DAL.KanbanBoard", null)
+                        .WithMany("Cards")
+                        .HasForeignKey("KanbanBoardId");
+
                     b.HasOne("PulsarPM.DAL.Project", "Project")
                         .WithMany("Cards")
                         .HasForeignKey("ProjectId")
@@ -337,9 +369,27 @@ namespace PulsarPM.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("PulsarPM.DAL.KanbanBoard", b =>
+                {
+                    b.HasOne("PulsarPM.DAL.Project", "Project")
+                        .WithOne("KanbanBoard")
+                        .HasForeignKey("PulsarPM.DAL.KanbanBoard", "ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("PulsarPM.DAL.KanbanBoard", b =>
+                {
+                    b.Navigation("Cards");
+                });
+
             modelBuilder.Entity("PulsarPM.DAL.Project", b =>
                 {
                     b.Navigation("Cards");
+
+                    b.Navigation("KanbanBoard");
                 });
 #pragma warning restore 612, 618
         }

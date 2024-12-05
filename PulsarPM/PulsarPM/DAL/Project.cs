@@ -8,6 +8,7 @@ public class Project
 
   [Required]
   public string Name { get; set; }
-  public KanbanBoard? KanbanBoard { get; set; }
   public bool IsArchived { get; set; } = false;
+  
+  public List<Card> Cards { get; set; } = new();
 }
