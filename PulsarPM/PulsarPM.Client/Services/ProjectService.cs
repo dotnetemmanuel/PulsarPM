@@ -55,7 +55,6 @@ public class ProjectService : IProjectService
 
   public async Task<ProjectDTO> CreateProjectAsync(ProjectDTO projectDto)
   {
-    // var response = await _httpClient.PostAsJsonAsync("api/Project", projectDto);
     var response = await _httpClient.PostAsJsonAsync("Project", projectDto);
     if (!response.IsSuccessStatusCode)
     {

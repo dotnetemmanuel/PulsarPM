@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
   public DbSet<Project> Projects { get; set; }
-  // public DbSet<KanbanBoard> KanbanBoards { get; set; }
   public DbSet<Card> Cards { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)

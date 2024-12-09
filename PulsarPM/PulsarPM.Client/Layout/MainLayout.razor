@@ -72,61 +72,6 @@
   <MudSnackbarProvider/>
 </div>
 
-@* <div class="page"> *@
-@*   $1$ @if (_isNavMenuVisible) #1# *@
-@*   $1$ { #1# *@
-@*   $1$ $2$ <div style="margin-top: 64px;"> #2# #1# *@
-@*   $1$ $2$   <NavMenu /> #2# #1# *@
-@*   $1$ $2$ </div> #2# #1# *@
-@*   $1$     } #1# *@
-@*   $1$ Required #1# *@
-@*   <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/> *@
-@* *@
-@*   <MudPopoverProvider/> *@
-@* *@
-@*   $1$ Needed for dialogs #1# *@
-@*   <MudDialogProvider/> *@
-@* *@
-@*   $1$ Needed for snackbars #1# *@
-@*   <MudSnackbarProvider/> *@
-@*   <main> *@
-@*     <div class="top-row px-4" style="@(_isDarkMode ? "background-color: #373740" : "")"> *@
-@*       <MudAppBar Color="Color.Dark" Fixed="true"> *@
-@*         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer"/> *@
-@*         <MudSpacer/> *@
-@*         <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool"> *@
-@*           @if (_isDarkMode) *@
-@*           { *@
-@*             <MudIcon Icon="@Icons.Material.Rounded.DarkMode"/> *@
-@*           } *@
-@*           else *@
-@*           { *@
-@*             <MudIcon Icon="@Icons.Material.Rounded.LightMode" Color="Color.Warning"/> *@
-@*           } *@
-@*         </MudSwitch> *@
-@*         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"/> *@
-@*       </MudAppBar> *@
-@*       @if (_open) *@
-@*       { *@
-@*       <MudDrawer @bind-Open="_open" Elevation="1"> *@
-@*         <MudDrawerHeader> *@
-@*           <MudText Typo="Typo.h6">My App</MudText> *@
-@*         </MudDrawerHeader> *@
-@*         <MudNavMenu> *@
-@*           <MudNavLink Match="NavLinkMatch.All">Store</MudNavLink> *@
-@*           <MudNavLink Match="NavLinkMatch.All">Library</MudNavLink> *@
-@*           <MudNavLink Match="NavLinkMatch.All">Community</MudNavLink> *@
-@*         </MudNavMenu>      </MudDrawer> *@
-@*       } *@
-@* *@
-@*     </div> *@
-@* *@
-@*     <article class="content px-4"> *@
-@*       @Body *@
-@*     </article> *@
-@*   </main> *@
-@* </div> *@
-
 <div id="blazor-error-ui">
   An unhandled error has occurred.
   <a href="" class="reload">Reload</a>
@@ -141,17 +86,16 @@
   {
     _open = !_open;
   }
-  private MudTheme _theme = new();
+  private readonly MudTheme _theme = new();
   private bool _isDarkMode = true;
-  private bool _isNavMenuVisible;
-  private Random random = new Random();
+  private readonly Random _random = new();
   private int _randomColor;
 
   protected override void OnInitialized()
   {
     ProjectStateService.OnProjectAdded += HandleProjectAdded;
     Console.WriteLine("MainLayout subscribed to OnProjectAdded event");
-    _randomColor = random.Next(1, 7);
+    _randomColor = _random.Next(1, 7);
   }
 
   private async Task HandleProjectAdded()
