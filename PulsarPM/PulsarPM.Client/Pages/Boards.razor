@@ -79,8 +79,6 @@ else
     </ChildContent>
     <ItemRenderer>
       <MudPaper Elevation="25" Class="pa-4 rounded-lg my-3">
-        @* <MudText>@context.Name</MudText> *@
-
         <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
                       Icon="@Icons.Material.Rounded.Edit" OnClick="() => ToggleEditForm(context)"></MudIconButton>
         <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
@@ -104,18 +102,12 @@ else
       </MudPaper>
     </ItemRenderer>
   </MudDropContainer>
-
 }
 
-
-
 @code {
-
-
   [Parameter]
   public int ProjectId { get; set; }
 
-  private bool _success;
   private bool _isFormVisible;
   private bool _isEditFormVisible = false;
   private bool _isLoading = true;
@@ -127,14 +119,12 @@ else
   private string _cardDescription = string.Empty;
   private string _cardColor = string.Empty;
   private string _cardStatus = string.Empty;
-  private CardDTO _editingCard;
+  private CardDTO? _editingCard;
 
   private ProjectDTO _projectDto = new();
   private List<CardDTO> _cards = new();
 
-  private string[] _errors;
   private MudForm _form;
-  private MudForm _editForm;
   private MudDropContainer<CardDTO> _mudDropContainer;
 
   protected override async Task OnInitializedAsync()
@@ -156,7 +146,7 @@ else
   }
 
 
-  private List<DropZone> _zones = new()
+  private readonly List<DropZone> _zones = new()
   {
     new()
     {
@@ -247,14 +237,13 @@ else
   }
 
   // DRAG AND DROP
-  private async Task ItemUpdated(MudItemDropInfo<CardDTO> card)
+  private async Task ItemUpdated(MudItemDropInfo<CardDTO>? card)
   {
 
     if (card.Item.Status != card.DropzoneIdentifier)
     {
       card.Item.Status = card.DropzoneIdentifier;
     }
-    // card.Item.Order = card.IndexInZone;
     var zoneCards = _cards.Where(c => c.Status == card.DropzoneIdentifier).OrderBy(c => c.Order).ToList();
 
     zoneCards.Remove(card.Item);
@@ -313,7 +302,6 @@ else
       _cards.Remove(cardDto);
 
       _mudDropContainer.Refresh();
-      // StateHasChanged();
     }
     catch (Exception ex)
     {
@@ -321,10 +309,9 @@ else
     }
   }
 
-  // Temporary class
   private class DropZone
   {
-    public string Name { get; init; }
+    public string? Name { get; init; }
   }
 
 }

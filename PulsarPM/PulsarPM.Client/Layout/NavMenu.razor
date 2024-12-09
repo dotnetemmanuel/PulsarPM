@@ -3,8 +3,6 @@
 @using PulsarPM.Client.Services
 @using Microsoft.AspNetCore.Components
 @using MudBlazor
-@using PulsarPM.Client.Services
-
 
 @* @implements IDisposable *@
 
@@ -125,11 +123,8 @@
 
 
 @code{
-
-
-  private bool renderFlag;
   private bool _isLoading = true;
-  public List<ProjectDTO> _projects = new();
+  private List<ProjectDTO> _projects = new();
 
   protected override async Task OnInitializedAsync()
   {
@@ -141,7 +136,7 @@
     }
     catch (Exception ex)
     {
-
+      Console.WriteLine(ex.Message);
     }
     finally
     {

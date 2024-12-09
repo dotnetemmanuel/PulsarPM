@@ -70,10 +70,9 @@ else
     private string? _error;
 
     private List<ProjectDTO> _projects = new();
-    private string[] _errors;
+    private string[]? _errors;
 
     private MudForm _form;
-    private MudGrid _mudgrid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,7 +83,6 @@ else
         catch (Exception ex)
         {
             _error = ex.Message;
-            // Logger.LogError(ex, "Error loading projects");
         }
         finally
         {
