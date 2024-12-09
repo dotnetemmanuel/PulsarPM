@@ -1,9 +1,10 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ddcd86a0_002D46d5_002D4a0f_002D8ba6_002De8d58db2d493/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CreateCardAsync_ShouldReturnCreatedCardDTO" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ddcd86a0_002D46d5_002D4a0f_002D8ba6_002De8d58db2d493/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CreateCardAsync_ShouldReturnCreatedCardDTO" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Solution /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ee0c2e32_002Dc6f2_002D423c_002Da267_002D9a1f5473cd0d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetProjectsAsync_ShouldReturnListOfProjects" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::5EB87F13-04B0-4E1D-B8DA-BCE4F8AA4BD5::net8.0::PulsarPM.Tests.ProjectServiceTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::5EB87F13-04B0-4E1D-B8DA-BCE4F8AA4BD5::net8.0::PulsarPM.Tests.CardServiceTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

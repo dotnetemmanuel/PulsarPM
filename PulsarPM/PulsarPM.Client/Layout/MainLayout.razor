@@ -4,68 +4,38 @@
 
 @* Width="@(_open ? "auto" : "")" Height="@(_open ? "auto" : "")" *@
 <div class="page">
-  <!-- Drawer Container -->
   <MudDrawerContainer style="background-color: #373740">
-    <!-- Navigation Drawer -->
     <MudDrawer Open="_open" style="overflow: visible; " Elevation="1">
       <NavMenu/>
     </MudDrawer>
 
-    <!-- AppBar to toggle the Drawer -->
     <MudAppBar Elevation="1">
       <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="ToggleDrawer"/>
       <MudSpacer/>
-      @* <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool"> *@
-      @*   @if (_isDarkMode) *@
-      @*   { *@
-      @*     <MudIcon Icon="@Icons.Material.Rounded.DarkMode" /> *@
-      @*   } *@
-      @*   else *@
-      @*   { *@
-      @*     <MudIcon Icon="@Icons.Material.Rounded.LightMode" Color="Color.Warning" /> *@
-      @*   } *@
-      @* </MudSwitch> *@
-      @* <MudImage Src="images/pulsarpm.png" Width="40"></MudImage> *@
-      @* <MudImage Src="images/pulsarpm_black.png" Width="40"></MudImage> *@
-      @if (_randomColor == 1)
-      {
-        <MudImage Src="images/pulsarpm_blue.png" Width="40"></MudImage>
-      }
-      else if (_randomColor == 2)
-      {
-        <MudImage Src="images/pulsarpm_green.png" Width="40"></MudImage>
-      }
-      else if (_randomColor == 3)
-      {
-        <MudImage Src="images/pulsarpm_orange.png" Width="40"></MudImage>
-
-      }
-      else if (_randomColor == 4)
-      {
-        <MudImage Src="images/pulsarpm_pink.png" Width="40"></MudImage>
-
-      }
-      else if (_randomColor == 5)
-      {
-        <MudImage Src="images/pulsarpm_purple.png" Width="40"></MudImage>
-
-      }
-      else if (_randomColor == 6)
-      {
-        <MudImage Src="images/pulsarpm_yellow.png" Width="40"></MudImage>
-      }
-
+      <MudLink Href="/">
+        @* <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool"> *@
+        @*   @if (_isDarkMode) *@
+        @*   { *@
+        @*     <MudIcon Icon="@Icons.Material.Rounded.DarkMode" /> *@
+        @*   } *@
+        @*   else *@
+        @*   { *@
+        @*     <MudIcon Icon="@Icons.Material.Rounded.LightMode" Color="Color.Warning" /> *@
+        @*   } *@
+        @* </MudSwitch> *@
+        <MudImage Src="@_imagePaths[_randomColor]" Width="40"></MudImage>
+      </MudLink>
     </MudAppBar>
 
-    <!-- Main Content -->
     <MudMainContent>
       <article class="content px-4" style="background-color:@(_isDarkMode ? "#32333d" : "white");">
-        @Body
+        <CascadingValue Value="@_randomColor">
+          @Body
+        </CascadingValue>
       </article>
     </MudMainContent>
   </MudDrawerContainer>
 
-  <!-- Required Providers -->
   <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
   <MudPopoverProvider/>
   <MudDialogProvider/>
@@ -86,16 +56,28 @@
   {
     _open = !_open;
   }
+
   private readonly MudTheme _theme = new();
   private bool _isDarkMode = true;
   private readonly Random _random = new();
-  private int _randomColor;
+
+  private int _randomColor { get; set; }
+
+  private string[] _imagePaths = new[]
+  {
+    "images/pulsarpm_blue.png",
+    "images/pulsarpm_green.png",
+    "images/pulsarpm_orange.png",
+    "images/pulsarpm_purple.png",
+    "images/pulsarpm_yellow.png",
+    "images/pulsarpm_pink.png",
+  };
 
   protected override void OnInitialized()
   {
     ProjectStateService.OnProjectAdded += HandleProjectAdded;
     Console.WriteLine("MainLayout subscribed to OnProjectAdded event");
-    _randomColor = _random.Next(1, 7);
+    _randomColor = _random.Next(0, 6);
   }
 
   private async Task HandleProjectAdded()

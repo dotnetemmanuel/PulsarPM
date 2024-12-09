@@ -1,5 +1,29 @@
 ﻿@page "/"
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
 
 <PageTitle>Home</PageTitle>
 
-<h1 style="margin-bottom: 0">Welcome to Pulsar!</h1>
+<div
+  style="display: grid; place-self: center; flex-direction: column; width: Calc(100vw - 3.5rem); height: calc(100vh - 100px); overflow: hidden;">
+
+  <h1 style=" text-align: center; justify-self: center; align-self: center">Welcome to Pulsar!</h1>
+  <MudImage Style="place-self: center; margin-bottom: auto;" Src="@_imagePaths[RandomColor]" Width="600"/>
+</div>
+
+@code{
+
+  [CascadingParameter]
+  private int RandomColor { get; set; }
+
+  private string[] _imagePaths = new[]
+  {
+    "images/pulsarpm_blue.png",
+    "images/pulsarpm_green.png",
+    "images/pulsarpm_orange.png",
+    "images/pulsarpm_purple.png",
+    "images/pulsarpm_yellow.png",
+    "images/pulsarpm_pink.png",
+  };
+
+}

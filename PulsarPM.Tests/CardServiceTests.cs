@@ -161,8 +161,8 @@ public class CardServiceTests
         Assert.Equal("Blue", result[0].Color);
         Assert.Equal(projectId, result[0].ProjectId);
         Assert.Equal(0, result[0].Order);
-        //card 2
 
+        //card 2
         Assert.Equal("Test Card2", result[1].Name);
         Assert.Equal("Test Description2", result[1].Description);
         Assert.Equal("Backlog", result[1].Status);
@@ -209,7 +209,6 @@ public class CardServiceTests
 
         // Act
         var result = await _cardService.UpdateCardAsync(updatedCard);
-
 
         // Assert
         Assert.NotNull(result);

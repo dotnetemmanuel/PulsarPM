@@ -4,8 +4,6 @@
 @using Microsoft.AspNetCore.Components
 @using MudBlazor
 
-@* @implements IDisposable *@
-
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject ProjectStateService ProjectStateService
@@ -113,11 +111,7 @@
       }
 
     </MudNavGroup>
-
-    <MudNavLink Href="/Account/Login">Sign In</MudNavLink>
-
-    <MudNavLink Href="/about">About</MudNavLink>
-
+    @* <MudNavLink Href="/Account/Login">Sign In</MudNavLink> *@
   </MudNavMenu>
 </MudPaper>
 

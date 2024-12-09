@@ -80,16 +80,17 @@ else
     <ItemRenderer>
       <MudPaper Elevation="25" Class="pa-4 rounded-lg my-3">
         <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
-                      Icon="@Icons.Material.Rounded.Edit" OnClick="() => ToggleEditForm(context)"></MudIconButton>
+                       Icon="@Icons.Material.Rounded.Edit" OnClick="() => ToggleEditForm(context)"></MudIconButton>
         <MudIconButton Style="border-radius: 50%; width: 40px; height: 40px;" Size="Size.Small"
-                      Icon="@Icons.Material.Rounded.Delete" OnClick="() => DeleteCardAsync(context)"></MudIconButton>
+                       Icon="@Icons.Material.Rounded.Delete" OnClick="() => DeleteCardAsync(context)"></MudIconButton>
         @if (_isEditFormVisible && _cardName == context.Name)
         {
           <MudPaper Elevation="25" Class="pa-2 rounded-lg">
             <MudTextField @bind-Value="_cardName" T="string" Label="Name" Required="true"
                           RequiredError="Project name is required!"/>
             <MudTextField @bind-Value="_cardDescription" T="string" Label="Description"/>
-            <MudButton OnClick="() => UpdateCardAsync(context)" Size="Size.Small" Color="Color.Primary" FullWidth="true">Save
+            <MudButton OnClick="() => UpdateCardAsync(context)" Size="Size.Small" Color="Color.Primary"
+                       FullWidth="true">Save
               Changes
             </MudButton>
           </MudPaper>
@@ -105,6 +106,7 @@ else
 }
 
 @code {
+
   [Parameter]
   public int ProjectId { get; set; }
 
