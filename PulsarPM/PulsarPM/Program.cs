@@ -9,7 +9,6 @@ using PulsarPM.Components.Account;
 using PulsarPM.DAL;
 using PulsarPM.Data;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -77,3 +76,4 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 await app.RunAsync();
+public partial class Program { }

@@ -61,7 +61,6 @@ public class ProjectService : IProjectService
       throw new Exception($"Failed to create project: {response.ReasonPhrase}");
     }
     return await response.Content.ReadFromJsonAsync<ProjectDTO>();
-
   }
 
   public async Task DeleteProjectAsync(ProjectDTO projectDto)
