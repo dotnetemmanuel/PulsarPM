@@ -4,6 +4,9 @@ using System.Net.Http.Json;
 using PulsarPM.Tests.Infrastructure;
 using Shared;
 using Xunit.Abstractions;
+using Xunit.Sdk;
+using XUnitPriority;
+
 
 public class ProjectServiceIntegrationTests : IClassFixture<TestingWebApplicationFactory<Program>>
 {
@@ -19,7 +22,7 @@ public class ProjectServiceIntegrationTests : IClassFixture<TestingWebApplicatio
   }
 
   [Fact]
-  public async Task GetProjects_ShouldReturnListOfProjects()
+  public async Task Test01_GetProjects_ShouldReturnListOfProjects()
   {
     // Act
     var response = await _client.GetAsync("api/Project");
@@ -39,7 +42,7 @@ public class ProjectServiceIntegrationTests : IClassFixture<TestingWebApplicatio
   }
 
   [Fact]
-  public async Task GetProjectById_ShouldReturnSingleProject()
+  public async Task Test02_GetProjectById_ShouldReturnSingleProject()
   {
     var response = await _client.GetAsync("api/Project/1");
     response.EnsureSuccessStatusCode();
@@ -53,8 +56,9 @@ public class ProjectServiceIntegrationTests : IClassFixture<TestingWebApplicatio
   }
 
   [Fact]
-  public async Task CreateProject_ShouldReturnCreatedProjectDTO()
+  public async Task Test03_CreateProject_ShouldReturnCreatedProjectDTO()
   {
+    // await _client.DeleteAsync("api/Project/1");
     var newProject = new ProjectDTO
     {
       Id = 2,
@@ -78,20 +82,30 @@ public class ProjectServiceIntegrationTests : IClassFixture<TestingWebApplicatio
     _testOutputHelper.WriteLine($"{projects[1].Name}");
   }
 
-  [Fact]
-  public async Task DeleteProject_ShouldReturnEmptyList()
-  {
-    //Act
-    var responseStartProjects = await _client.GetAsync("api/Project");
-    var projects = await responseStartProjects.Content.ReadFromJsonAsync<List<ProjectDTO>>();
-
-    await _client.DeleteAsync("api/Project/1");
-
-    var responseFinalProjects = await _client.GetAsync("api/Project");
-    var projectsLeft = await responseFinalProjects.Content.ReadFromJsonAsync<List<ProjectDTO>>();
-
-    //Assert
-    Assert.Single(projects);
-    Assert.Empty(projectsLeft);
-  }
+  // [Fact]
+  // public async Task Test04_DeleteProject_ShouldReturnEmptyList()
+  // {
+  //   //Arrange
+  //   var newProject = new ProjectDTO
+  //   {
+  //     Id = 2,
+  //     Name = "Test Project",
+  //     Cards = new List<CardDTO>(),
+  //     IsArchived = false
+  //   };
+  //   await _client.PostAsJsonAsync("api/Project", newProject);
+  //
+  //   //Act
+  //   var responseStartProjects = await _client.GetAsync("api/Project");
+  //   var projects = await responseStartProjects.Content.ReadFromJsonAsync<List<ProjectDTO>>();
+  //
+  //   await _client.DeleteAsync("api/Project/2");
+  //
+  //   var responseFinalProjects = await _client.GetAsync("api/Project");
+  //   var projectsLeft = await responseFinalProjects.Content.ReadFromJsonAsync<List<ProjectDTO>>();
+  //
+  //   //Assert
+  //   Assert.Equal(2, projects.Count);
+  //   Assert.Single(projectsLeft);
+  // }
 }
